@@ -2,7 +2,7 @@
 
 APP=obs-studio
 
-mkdir tmp
+mkdir -p tmp
 cd tmp
 
 # DOWNLOADING THE DEPENDENCIES
@@ -21,10 +21,19 @@ fi
 chmod a+x ./appimagetool ./pkg2appimage
 
 # CREATING THE APPIMAGE: APPDIR FROM A RECIPE...
-rm -f ./recipe.yml
+
 PREVIOUSLTS=$(wget -q https://releases.ubuntu.com/ -O - | grep class | grep LTS | grep -m2 href | tail -n1 | sed -n 's/.*href="\([^"]*\).*/\1/p' | rev| cut -c 2- | rev)
 DEB=$(wget -q https://ppa.launchpadcontent.net/obsproject/obs-studio/ubuntu/pool/main/o/obs-studio/ -O - | grep $PREVIOUSLTS | grep amd64.deb | grep -o -P '(?<=href=").*(?=">obs)')
-echo "app: obs-studio
+wget https://ppa.launchpadcontent.net/obsproject/obs-studio/ubuntu/pool/main/o/obs-studio/$DEB
+ar x ./*.deb
+tar fx ./control.tar.xz
+
+mkdir -p $APP
+mv ./$DEB ./$APP/
+
+# ...COMPILE THE RECIPE...
+rm -f ./recipe.yml
+echo "app: $APP
 binpatch: true
 ingredients:
   dist: $PREVIOUSLTS
@@ -32,21 +41,17 @@ ingredients:
     - deb http://archive.ubuntu.com/ubuntu/ $PREVIOUSLTS main universe restricted multiverse
     - deb http://archive.ubuntu.com/ubuntu $PREVIOUSLTS-security main universe restricted multiverse
     - deb http://archive.ubuntu.com/ubuntu/ $PREVIOUSLTS-updates main universe restricted multiverse
-  ppas:
-    - obsproject/obs-studio
   packages:
     - obs-studio
     - ffmpeg
     - v4l2loopback-dkms" >> recipe.yml
 
-wget https://ppa.launchpadcontent.net/obsproject/obs-studio/ubuntu/pool/main/o/obs-studio/$DEB
-ar x ./*.deb
-tar fx ./control.tar.xz
 echo "" >> deps
 cat control | grep -e "Depends:" | tr ' ' '\n' | grep -w -v '(' | grep -w -v ',' | grep -w -v '|' | grep -w -v ')' | tr ',' '\n' | grep -w -v "" >> deps
 ARGS=$(sed '1d' ./deps)
 for arg in $ARGS; do echo "    - $arg" >> ./recipe.yml; done
 
+# ...RUN PKG2APPIMAGE...
 ./pkg2appimage ./recipe.yml
 
 # ...DOWNLOADING LIBUNIONPRELOAD...
