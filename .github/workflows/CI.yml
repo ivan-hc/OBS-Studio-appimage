@@ -15,11 +15,7 @@ jobs:
     - name: build
       if: always()
       run: |
-        PREVIOUSLTS=$(wget -q https://releases.ubuntu.com/ -O - | grep class | grep LTS | grep -m2 href | tail -n1 | sed -n 's/.*href="\([^"]*\).*/\1/p' | rev| cut -c 2- | rev)
-        DEB=$(wget -q https://ppa.launchpadcontent.net/obsproject/obs-studio/ubuntu/pool/main/o/obs-studio/ -O - | grep $PREVIOUSLTS | grep amd64.deb | grep -o -P '(?<=href=").*(?=">obs)')
-        wget https://ppa.launchpadcontent.net/obsproject/obs-studio/ubuntu/pool/main/o/obs-studio/$DEB
-        sudo apt-get update && echo Y | sudo apt-get dist-upgrade
-        sudo dpkg -i *.deb
+        sudo add-apt-repository ppa:obsproject/obs-studio && sudo apt-get update && sudo apt-get install obs-studio
         wget https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage -O linuxdeployqt
         chmod a+x ./linuxdeployqt
         APP=obs-studio
