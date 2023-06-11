@@ -23,16 +23,6 @@ jobs:
         cat control | grep -e "Depends:" | tr ' ' '\n' | grep -w -v '(' | grep -w -v ',' | grep -w -v '|' | grep -w -v ')' | tr ',' ' ' >> deps
         ARGS=$(cat ./deps)
         sudo apt install "$ARGS"
-        git clone --recursive https://github.com/obsproject/obs-studio.git
-        cd obs-studio
-        wget https://cdn-fastly.obsproject.com/downloads/cef_binary_5060_linux64.tar.bz2
-        tar -xjf cef_binary_5060_linux64.tar.bz2
-        mkdir build ; cd build
-        cmake -DUNIX_STRUCTURE=1 -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_BROWSER=ON -DENABLE_PIPEWIRE=ON -DENABLE_PULSEAUDIO=ON -DENABLE_HEVC=ON  -DENABLE_VST=ON -DENABLE_JACK=ON -DENABLE_AJA=OFF -DCEF_ROOT_DIR="../cef_binary_5060_linux64/" ..
-        make -j `nproc`
-        sudo checkinstall --default --pkgname=obs-studio --fstrans=no --backup=no --pkgversion="$(date +%Y%m%d)-git" --deldoc=yes
-        sudo dpkg -i *.deb
-        sudo ldconfig
         wget https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage -O linuxdeployqt
         chmod a+x ./linuxdeployqt
         APP=obs-studio
