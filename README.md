@@ -1,5 +1,4 @@
-# OBS-Studio-appimage
-OBS Studio AppImage created from the official PPA.
+This is an attempt to create OBS Studio AppImage from the official PPA.
 
 #### WARNING: this build is higly experimental, this repo only provides a builder ([here](https://raw.githubusercontent.com/ivan-hc/OBS-Studio-appimage/main/obs-studio))... any help appreciated!
 
