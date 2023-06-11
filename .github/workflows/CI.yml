@@ -20,9 +20,8 @@ jobs:
         wget https://ppa.launchpadcontent.net/obsproject/obs-studio/ubuntu/pool/main/o/obs-studio/$DEB
         ar x ./*.deb
         tar fx ./control.tar.xz
-        cat control | grep -e "Depends:" | tr ' ' '\n' | grep -w -v '(' | grep -w -v ',' | grep -w -v '|' | grep -w -v ')' | tr ',' ' ' >> deps
-        ARGS=$(cat ./deps)
-        sudo apt install "$ARGS"
+        ARGS=$(echo $(cat control | grep -e "Depends:" | tr ' ' '\n' | grep -w -v '(' | grep -w -v ',' | grep -w -v '|' | grep -w -v ')' | tr ',' ' ' | grep -w -v ""))
+        sudo apt install ./$DEB "$ARGS"
         wget https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage -O linuxdeployqt
         chmod a+x ./linuxdeployqt
         APP=obs-studio
