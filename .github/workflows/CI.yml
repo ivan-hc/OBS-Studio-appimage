@@ -21,10 +21,11 @@ jobs:
         APP=obs-studio
         version=$(wget -q https://api.github.com/repos/obsproject/obs-studio/releases/latest -O - | grep tag_name | cut -d '"' -f 4 | head -1)
         mkdir -p $APP.AppDir $APP.AppDir/usr $APP.AppDir/usr/bin $APP.AppDir/lib $APP.AppDir/usr/lib $APP.AppDir/usr/lib $APP.AppDir/usr/share $APP.AppDir/usr/share/applications $APP.AppDir/usr/share/icons $APP.AppDir/usr/share/icons/hicolor $APP.AppDir/usr/share/icons/hicolor/128x128 $APP.AppDir/usr/share/icons/hicolor/256x256 $APP.AppDir/usr/share/icons/hicolor/128x128/apps $APP.AppDir/usr/share/icons/hicolor/256x256/apps
-        cp /usr/share/applications/*obs*desktop $APP.AppDir/usr/share/applications/$APP.desktop
-        cp /usr/share/icons/hicolor/128x128/apps/*obs* $APP.AppDir/usr/share/icons/hicolor/128x128/apps/
-        cp /usr/share/icons/hicolor/256x256/apps/*obs* $APP.AppDir/usr/share/icons/hicolor/256x256/apps/
-        ./linuxdeployqt $APP.AppDir/usr/share/applications/$APP.desktop -appimage -bundle-non-qt-libs
+        cp /usr/share/applications/com.obsproject.Studio.desktop $APP.AppDir/usr/share/applications/com.obsproject.Studio.desktop
+        cp /usr/share/icons/hicolor/128x128/apps/com.obsproject.Studio.png $APP.AppDir/usr/share/icons/hicolor/128x128/apps/
+        cp /usr/share/icons/hicolor/256x256/apps/com.obsproject.Studio.png $APP.AppDir/usr/share/icons/hicolor/256x256/apps/
+        cp /usr/share/icons/hicolor/512x512/apps/com.obsproject.Studio.png $APP.AppDir/usr/share/icons/hicolor/256x256/apps/
+        ./linuxdeployqt $APP.AppDir/usr/share/applications/com.obsproject.Studio.png -appimage -bundle-non-qt-libs
         mkdir dist
         mv *AppImage dist/$APP-$version-x86_64.AppImage
 
