@@ -15,6 +15,8 @@ jobs:
     - name: build
       if: always()
       run: |
+        sudo apt update
+        sudo apt install libfuse2
         wget https://raw.githubusercontent.com/ivan-hc/OBS-Studio-appimage/main/obs-studio
         chmod a+x ./obs-studio
         ./obs-studio
