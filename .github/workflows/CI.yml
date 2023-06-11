@@ -15,7 +15,7 @@ jobs:
     - name: build
       if: always()
       run: |
-        sudo add-apt-repository ppa:obsproject/obs-studio && sudo apt-get update && sudo apt-get install obs-studio
+        sudo add-apt-repository ppa:obsproject/obs-studio && sudo apt-get update && sudo apt-get install obs-studio qt5-qmake
         wget https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage -O linuxdeployqt
         chmod a+x ./linuxdeployqt
         APP=obs-studio
