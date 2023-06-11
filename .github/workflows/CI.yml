@@ -25,7 +25,7 @@ jobs:
         cp /usr/share/icons/hicolor/128x128/apps/com.obsproject.Studio.png $APP.AppDir/usr/share/icons/hicolor/128x128/apps/
         cp /usr/share/icons/hicolor/256x256/apps/com.obsproject.Studio.png $APP.AppDir/usr/share/icons/hicolor/256x256/apps/
         cp /usr/share/icons/hicolor/512x512/apps/com.obsproject.Studio.png $APP.AppDir/usr/share/icons/hicolor/256x256/apps/
-        ./linuxdeployqt $APP.AppDir/usr/share/applications/com.obsproject.Studio.png -appimage -bundle-non-qt-libs
+        ./linuxdeployqt $APP.AppDir/usr/share/applications/com.obsproject.Studio.desktop -appimage -bundle-non-qt-libs
         mkdir dist
         mv *AppImage dist/$APP-$version-x86_64.AppImage
 
