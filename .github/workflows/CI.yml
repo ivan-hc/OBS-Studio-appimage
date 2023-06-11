@@ -1,0 +1,68 @@
+name: OBS Studio Appimage
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: build
+      run: |
+        wget -qO- https://raw.githubusercontent.com/89luca89/distrobox/main/install | sudo sh
+        distrobox create -n debian -i docker.io/library/debian:oldoldstable
+        distrobox enter debian
+        sudo apt install cmake git checkinstall build-essential libmbedtls-dev libasound2-dev libavcodec-dev libavdevice-dev libavfilter-dev libavformat-dev libavutil-dev libcurl4-openssl-dev libfdk-aac-dev libfontconfig-dev libfreetype6-dev libgl1-mesa-dev libjack-jackd2-dev libjansson-dev libluajit-5.1-dev libpulse-dev libqt5x11extras5-dev libspeexdsp-dev libswresample-dev libswscale-dev libudev-dev libv4l-dev libvlc-dev libwayland-dev libx11-dev libx264-dev libxcb-shm0-dev libxcb-xinerama0-dev libxcomposite-dev libxinerama-dev pkg-config python3-dev qt6-svg-dev swig libxcb-randr0-dev libxcb-xfixes0-dev libxcb-shm0-dev libxcb-xinerama0-dev libxcb-composite0-dev libx11-xcb-dev libxcb1-dev libxss-dev librist-dev libsrt-openssl-dev qt6-base-dev qt6-base-private-dev nlohmann-json3-dev libwebsocketpp-dev libasio-dev libva-dev libpipewire-0.3-dev v4l2loopback-dkms ffmpeg
+        git clone --recursive https://github.com/obsproject/obs-studio.git
+        cd obs-studio
+        wget https://cdn-fastly.obsproject.com/downloads/cef_binary_5060_linux64.tar.bz2
+        tar -xjf cef_binary_5060_linux64.tar.bz2
+        mkdir build ; cd build
+        cmake -DUNIX_STRUCTURE=1 -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_BROWSER=ON -DENABLE_PIPEWIRE=ON -DENABLE_PULSEAUDIO=ON -DENABLE_HEVC=ON  -DENABLE_VST=ON -DENABLE_JACK=ON -DENABLE_AJA=OFF -DCEF_ROOT_DIR="../cef_binary_5060_linux64/" ..
+        make -j `nproc`
+        sudo checkinstall --default --pkgname=obs-studio --fstrans=no --backup=no --pkgversion="$(date +%Y%m%d)-git" --deldoc=yes
+        sudo dpkg -i *.deb
+        sudo ldconfig
+        wget https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage -O linuxdeployqt
+        chmod a+x ./linuxdeployqt
+        APP=obs-studio
+        version=$(wget -q https://api.github.com/repos/obsproject/obs-studio/releases/latest -O - | grep tag_name | cut -d '"' -f 4 | head -1)
+        mkdir $APP.AppDir $APP.AppDir/usr $APP.AppDir/usr/bin $APP.AppDir/lib $APP.AppDir/usr/lib $APP.AppDir/usr/lib $APP.AppDir/usr/share $APP.AppDir/usr/share/applications $APP.AppDir/usr/share/icons $APP.AppDir/usr/share/icons/hicolor $APP.AppDir/usr/share/icons/hicolor/128x128 $APP.AppDir/usr/share/icons/hicolor/256x256 $APP.AppDir/usr/share/icons/hicolor/128x128/apps $APP.AppDir/usr/share/icons/hicolor/256x256/apps
+        cp /usr/share/applications/*obs*desktop $APP.AppDir/usr/share/applications/$APP.desktop
+        cp /usr/share/icons/hicolor/128x128/apps/*obs* $APP.AppDir/usr/share/icons/hicolor/128x128/apps/
+        cp /usr/share/icons/hicolor/256x256/apps/*obs* $APP.AppDir/usr/share/icons/hicolor/256x256/apps/
+        ./linuxdeployqt $APP.AppDir/usr/share/applications/$APP.desktop -appimage -bundle-non-qt-libs
+        mkdir dist
+        mv *AppImage dist/$APP-$version-x86_64.AppImage
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v1.0.0
+      with:
+        name: OBS-Studio-x86_64.AppImage
+        path: 'dist'
+        
+  release:
+      needs: [build]
+      permissions: write-all
+      runs-on: ubuntu-latest
+
+      steps:
+        - uses: actions/download-artifact@v1
+          with:
+            name: OBS-Studio-x86_64.AppImage
+
+        - name: release
+          uses: marvinpinto/action-automatic-releases@latest
+          with:
+            title: Continuous build
+            automatic_release_tag: continuous
+            prerelease: true
+            draft: false
+            files: |
+              OBS-Studio-x86_64.AppImage
+            repo_token: ${{ secrets.GITHUB_TOKEN }}
