@@ -18,10 +18,7 @@ jobs:
         PREVIOUSLTS=$(wget -q https://releases.ubuntu.com/ -O - | grep class | grep LTS | grep -m2 href | tail -n1 | sed -n 's/.*href="\([^"]*\).*/\1/p' | rev| cut -c 2- | rev)
         DEB=$(wget -q https://ppa.launchpadcontent.net/obsproject/obs-studio/ubuntu/pool/main/o/obs-studio/ -O - | grep $PREVIOUSLTS | grep amd64.deb | grep -o -P '(?<=href=").*(?=">obs)')
         wget https://ppa.launchpadcontent.net/obsproject/obs-studio/ubuntu/pool/main/o/obs-studio/$DEB
-        ar x ./*.deb
-        tar fx ./control.tar.xz
-        ARGS=$(echo $(cat control | grep -e "Depends:" | tr ' ' '\n' | grep -w -v '(' | grep -w -v ',' | grep -w -v '|' | grep -w -v ')' | tr ',' ' ' | grep -w -v ""))
-        sudo apt install ./$DEB "$ARGS"
+        sudo dpkg -i *.deb
         wget https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage -O linuxdeployqt
         chmod a+x ./linuxdeployqt
         APP=obs-studio
