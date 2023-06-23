@@ -41,9 +41,13 @@ ingredients:
     - deb http://archive.ubuntu.com/ubuntu/ $PREVIOUSLTS main universe restricted multiverse
     - deb http://archive.ubuntu.com/ubuntu $PREVIOUSLTS-security main universe restricted multiverse
     - deb http://archive.ubuntu.com/ubuntu/ $PREVIOUSLTS-updates main universe restricted multiverse
+  ppas:
+    - obsproject/obs-studio
   packages:
     - obs-studio
     - ffmpeg
+    - libpangocairo-1.0-0
+    - libpangoft2-1.0-0
     - v4l2loopback-dkms" >> recipe.yml
 
 echo "" >> deps
