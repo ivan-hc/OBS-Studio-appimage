@@ -32,9 +32,6 @@ chmod a+x ./obs-studio.AppDir/AppRun
 # REMOVE SOME BLOATWARES
 rm -R -f ./obs-studio.AppDir/.junest/var
 
-# ADD SYMLINK TO $HOME
-ln -s /home ./obs-studio.AppDir/.junest/home
-
 # CREATE THE APPIMAGE
 ARCH=x86_64 ./appimagetool -n ./obs-studio.AppDir
 mv ./*AppImage ./OBS-Studio_$VERSION-x86_64.AppImage
