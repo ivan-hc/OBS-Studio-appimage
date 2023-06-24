@@ -25,7 +25,7 @@ HERE="$(dirname "$(readlink -f $0)")"
 export UNION_PRELOAD=$HERE
 export JUNEST_HOME=$HERE/.junest
 export PATH=$HERE/.local/share/junest/bin/:$PATH
-$HERE/.local/share/junest/bin/junest -n -- obs "$@"
+echo "obs $@" | $HERE/.local/share/junest/bin/junest -n
 EOF
 chmod a+x ./obs-studio.AppDir/AppRun
 
