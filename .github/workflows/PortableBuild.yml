@@ -15,19 +15,7 @@ jobs:
     - name: build
       if: always()
       run: |
-        sudo apt update
-        sudo apt install libfuse2 cmake ninja-build pkg-config clang clang-format build-essential curl ccache git libavcodec-dev libavdevice-dev libavfilter-dev libavformat-dev libavutil-dev libswresample-dev libswscale-dev libx264-dev libcurl4-openssl-dev libmbedtls-dev libgl1-mesa-dev libjansson-dev libluajit-5.1-dev python3-dev libx11-dev libxcb-randr0-dev libxcb-shm0-dev libxcb-xinerama0-dev libxcb-composite0-dev libxcomposite-dev libxinerama-dev libxcb1-dev libx11-xcb-dev libxcb-xfixes0-dev swig libcmocka-dev libxss-dev libglvnd-dev libgles2-mesa libgles2-mesa-dev libwayland-dev qtbase5-dev qtbase5-private-dev libqt5svg5-dev qtwayland5 libasound2-dev libfdk-aac-dev libfontconfig-dev libfreetype6-dev libjack-jackd2-dev libpulse-dev libsndio-dev libspeexdsp-dev libudev-dev libv4l-dev libva-dev libvlc-dev libdrm-dev nlohmann-json3-dev libwebsocketpp-dev libasio-dev
-        rm -R -f ./obs-studio
-        wget https://cdn-fastly.obsproject.com/downloads/cef_binary_5060_linux64.tar.bz2
-        tar -xjf ./cef_binary_5060_linux64.tar.bz2
-        git clone --recursive https://github.com/obsproject/obs-studio.git
-        cd obs-studio
-        mkdir build && cd build
-        cmake -DLINUX_PORTABLE=ON -DCMAKE_INSTALL_PREFIX="${HOME}/obs-studio-portable" -DENABLE_BROWSER=ON -DCEF_ROOT_DIR="../../cef_binary_5060_linux64" -DENABLE_AJA=OFF ..
-        make -j4 && make install
-        tar cf obs-portable.tar.gz ./obs-studio-portable
-        mkdir dist
-        mv ./obs-portable.tar.gz dist/
+        ls -a
 
     - name: Upload artifact
       uses: actions/upload-artifact@v1.0.0
