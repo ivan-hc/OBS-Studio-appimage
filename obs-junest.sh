@@ -30,7 +30,6 @@ EOF
 chmod a+x ./obs-studio.AppDir/AppRun
 
 # REMOVE SOME BLOATWARES
-rm -R -f ./obs-studio.AppDir/.junest/home
 rm -R -f ./obs-studio.AppDir/.junest/var
 
 # ADD SYMLINK TO $HOME
