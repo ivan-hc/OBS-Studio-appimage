@@ -1,6 +1,7 @@
 This is an attempt to create OBS Studio AppImage from the official PPA.
 
-#### WARNING: this build is higly experimental, this repo only provides a builder ([here](https://raw.githubusercontent.com/ivan-hc/OBS-Studio-appimage/main/obs-studio))... any help appreciated!
+## WARNING: 
+#### *This build is higly experimental, this repo only provides the scripts to build an experimental version of OBS Studio from many different sources. Any help appreciated!*
 
 ## How to test
 - Download the last experimental build from [here](https://github.com/ivan-hc/OBS-Studio-appimage/releases/tag/continuous)
