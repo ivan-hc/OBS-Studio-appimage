@@ -46,9 +46,21 @@ ingredients:
   packages:
     - obs-studio
     - ffmpeg
+    - libvlc5
+    - libnss-mdns
+    - libxdmcp6
+    - libxau6
+    - libxdamage1
+    - libpciaccess0
+    - libxcb-randr0
     - libpangocairo-1.0-0
     - libpangoft2-1.0-0
-    - v4l2loopback-dkms" >> recipe.yml
+    - libqt5x11extras5
+    - libqt5x11extras5-dev
+    - libssl-dev
+    - libxcb-glx0-dev
+    - v4l2loopback-dkms
+    - xcb" >> recipe.yml
 
 echo "" >> deps
 cat control | grep -e "Depends:" | tr ' ' '\n' | grep -w -v '(' | grep -w -v ',' | grep -w -v '|' | grep -w -v ')' | tr ',' '\n' | grep -w -v "" >> deps
@@ -66,23 +78,31 @@ mv ./libunionpreload.so ./$APP/$APP.AppDir/
 # ...REPLACING THE EXISTING APPRUN WITH A CUSTOM ONE...
 rm -R -f ./$APP/$APP.AppDir/AppRun
 cat >> ./$APP/$APP.AppDir/AppRun << 'EOF'
-#!/bin/bash
+#!/bin/sh
 HERE="$(dirname "$(readlink -f $0)")"
 export UNION_PRELOAD=$HERE
 export LD_PRELOAD=$HERE/libunionpreload.so
 export PATH=$HERE/usr/bin/:$HERE/usr/sbin/:$HERE/bin/:$HERE/sbin/:$PATH
-export LD_LIBRARY_PATH=/lib/:/lib64/:/usr/lib/:/usr/lib/x86_64-linux-gnu/:$HERE/usr/lib/x86_64-linux-gnu/obs-plugins/:$HERE/usr/lib/x86_64-linux-gnu/cmake/libobs/:$HERE/usr/lib/x86_64-linux-gnu/cmake/obs-frontend-api/:$HERE/usr/lib/x86_64-linux-gnu/obs-scripting/:$HERE/usr/lib/:$HERE/usr/lib/x86_64-linux-gnu/:$HERE/lib/:$HERE/lib/x86_64-linux-gnu/:$HERE/usr/lib/gcc/x86_64-linux-gnu/9/:$HERE/usr/lib/python3.8/lib-dynload/:$LD_LIBRARY_PATH
-export FFMPEG_CODEC_PATH=$HERE/usr/lib/x86_64-linux-gnu/:$LD_CODEC_PATH
-export PYTHONPATH=$HERE/usr/lib/python3.8/:$HERE/usr/lib/python3.8/lib-dynload/:$PYTHONPATH
+export LD_LIBRARY_PATH=/lib/:/lib64/:/usr/lib/:/usr/lib/x86_64-linux-gnu/:$HERE/usr/lib/x86_64-linux-gnu/obs-plugins/:$HERE/usr/lib/x86_64-linux-gnu/cmake/libobs/:$HERE/usr/lib/x86_64-linux-gnu/qt5/plugins/xcbglintegrations/:$HERE/usr/lib/x86_64-linux-gnu/cmake/obs-frontend-api/:$HERE/usr/lib/x86_64-linux-gnu/obs-scripting/:$HERE/usr/lib/:$HERE/usr/lib/x86_64-linux-gnu/:$HERE/lib/:$HERE/lib/x86_64-linux-gnu/:$HERE/usr/lib/gcc/x86_64-linux-gnu/9/:$HERE/usr/lib/python3.8/lib-dynload/:$LD_LIBRARY_PATH
+export PYTHONPATH=$HERE/usr/lib/python3.8/:$PYTHONPATH
+export PYTHONHOME=$HERE/usr/:$PYTHONHOME
 export XDG_DATA_DIRS=$HERE/usr/share/:$XDG_DATA_DIRS
 export PERL5LIB=$HERE/usr/share/perl5/:$HERE/usr/lib/perl5/:$PERLLIB
 export GSETTINGS_SCHEMA_DIR=$HERE/usr/share/glib-2.0/schemas/:$GSETTINGS_SCHEMA_DIR
-export QT_PLUGIN_PATH=$HERE/lib/:$HERE/usr/lib/:$HERE/usr/lib/x86_64-linux-gnu/qt5/plugins/:$HERE/usr/lib/x86_64-linux-gnu/obs-plugins/:$QT_PLUGIN_PATH
-ls /etc/ssl/certs/ca-certificates.crt > /dev/null 2>&1 && REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
-ls /etc/pki/tls/certs/ca-bundle.crt > /dev/null 2>&1 && REQUESTS_CA_BUNDLE=/etc/pki/tls/certs/ca-bundle.crt
-export REQUESTS_CA_BUNDLE=${REQUESTS_CA_BUNDLE}
-exec $HERE/usr/bin/obs "$@"
+export QT_PLUGIN_PATH=$HERE/lib/:$HERE/usr/lib/:$HERE/usr/lib/x86_64-linux-gnu/qt5/plugins/:$HERE/usr/lib/x86_64-linux-gnu/obs-plugins/:$HERE/usr/lib/x86_64-linux-gnu/qt5/plugins/platforms/:$QT_PLUGIN_PATH
 
+
+export OBS_DATA_PATH=$HERE/usr/share/obs/obs-studio/
+export OBS_PLUGINS_LIB_PATH=$HERE/usr/lib/x86_64-linux-gnu/obs-plugins/
+export OBS_PLUGINS_DATA_PATH=$HERE/usr/share/obs/obs-plugins/
+export LIBOBS_DATA_PATH=$HERE/usr/share/obs/libobs/
+export QT_QPA_PLATFORM_PLUGIN_PATH=$HERE/usr/lib/x86_64-linux-gnu/qt5/plugins/platforms/
+export OBS_INCLUDE_PATH=$HERE/usr/include/obs/
+
+export INCLUDE_PATH=$HERE/usr/include/
+
+export QT_DEBUG_PLUGINS=1 
+exec $HERE/usr/bin/obs "$@"
 EOF
 chmod a+x ./$APP/$APP.AppDir/AppRun
 
