@@ -20,9 +20,8 @@ jobs:
         wget https://raw.githubusercontent.com/ivan-hc/OBS-Studio-appimage/main/obs-junest.sh
         chmod a+x ./obs-junest.sh
         ./obs-junest.sh
-        cd ..
         mkdir dist
-        mv tmp/*AppImage dist/
+        mv *AppImage dist/
 
     - name: Upload artifact
       uses: actions/upload-artifact@v1.0.0
