@@ -20,12 +20,12 @@ wget -q https://archlinux.org/mirrorlist/?country="$(echo $COUNTRY)" -O - | sed 
 ./.local/share/junest/bin/junest -- sudo pacman --noconfirm -S $APP python3
 
 # SET THE LOCALE
-sed "s/# /#>/g" ./.junest/etc/locale.gen | sed "s/#//g" | sed "s/>/#/g" # ENABLE ALL THE LANGUAGES
+sed "s/# /#>/g" ./.junest/etc/locale.gen | sed "s/#//g" | sed "s/>/#/g" >> ./locale.gen # ENABLE ALL THE LANGUAGES
 #sed "s/#$(echo $LANG)/$(echo $LANG)/g" ./.junest/etc/locale.gen >> ./locale.gen # ENABLE ONLY ONE LANGUAGE
-rm ./.junest/etc/locale.gen
+rm -R ./.junest/etc/locale.gen
 mv ./locale.gen ./.junest/etc/locale.gen
 rm ./.junest/etc/locale.conf
-echo "LANG=$LANG" >> ./.junest/etc/locale.conf
+#echo "LANG=$LANG" >> ./.junest/etc/locale.conf
 sed -i 's/LANG=${LANG:-C}/LANG=$LANG/g' ./.junest/etc/profile.d/locale.sh
 ./.local/share/junest/bin/junest -- sudo pacman --noconfirm -S glibc gzip
 ./.local/share/junest/bin/junest -- sudo locale-gen
