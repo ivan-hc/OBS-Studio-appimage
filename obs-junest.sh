@@ -20,15 +20,15 @@ wget -q https://archlinux.org/mirrorlist/?country="$(echo $COUNTRY)" -O - | sed 
 ./.local/share/junest/bin/junest -- sudo pacman --noconfirm -S $APP python3
 
 # SET THE LOCALE
-sed "s/# /#>/g" ./.junest/etc/locale.gen | sed "s/#//g" | sed "s/>/#/g" >> ./locale.gen # ENABLE ALL THE LANGUAGES
+#sed "s/# /#>/g" ./.junest/etc/locale.gen | sed "s/#//g" | sed "s/>/#/g" >> ./locale.gen # ENABLE ALL THE LANGUAGES
 #sed "s/#$(echo $LANG)/$(echo $LANG)/g" ./.junest/etc/locale.gen >> ./locale.gen # ENABLE ONLY ONE LANGUAGE
-rm -R ./.junest/etc/locale.gen
-mv ./locale.gen ./.junest/etc/locale.gen
+#rm -R ./.junest/etc/locale.gen
+#mv ./locale.gen ./.junest/etc/locale.gen
 rm ./.junest/etc/locale.conf
 #echo "LANG=$LANG" >> ./.junest/etc/locale.conf
 sed -i 's/LANG=${LANG:-C}/LANG=$LANG/g' ./.junest/etc/profile.d/locale.sh
-./.local/share/junest/bin/junest -- sudo pacman --noconfirm -S glibc gzip
-./.local/share/junest/bin/junest -- sudo locale-gen
+#./.local/share/junest/bin/junest -- sudo pacman --noconfirm -S glibc gzip
+#./.local/share/junest/bin/junest -- sudo locale-gen
 
 # VERSION NAME
 VERSION=$(wget -q https://archlinux.org/packages/extra/x86_64/$APP/ -O - | grep $APP | head -1 | grep -o -P '(?<='$APP' ).*(?=</)' | tr -d " (x86_64)")
@@ -54,8 +54,7 @@ chmod a+x ./$APP.AppDir/AppRun
 
 # REMOVE "READ-ONLY FILE SYSTEM" ERRORS
 sed -i 's#${JUNEST_HOME}/usr/bin/junest_wrapper#${HOME}/.cache/junest_wrapper.old#g' ./$APP.AppDir/.local/share/junest/lib/core/wrappers.sh
-sed -i 's/rm/#rm/g' ./$APP.AppDir/.local/share/junest/lib/core/wrappers.sh
-sed -i 's/ln/#ln/g' ./$APP.AppDir/.local/share/junest/lib/core/wrappers.sh
+sed -i 's/rm -f "${JUNEST_HOME}${bin_path}_wrappers/#rm -f "${JUNEST_HOME}${bin_path}_wrappers/g' ./$APP.AppDir/.local/share/junest/lib/core/wrappers.sh
 
 # REMOVE SOME BLOATWARES
 rm -R -f ./$APP.AppDir/.junest/var
