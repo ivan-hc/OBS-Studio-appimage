@@ -43,12 +43,13 @@ cp ./$APP.AppDir/.junest/usr/share/icons/hicolor/scalable/apps/*obs* ./$APP.AppD
 cp ./$APP.AppDir/.junest/usr/share/applications/*obs* ./$APP.AppDir/
 cat >> ./$APP.AppDir/AppRun << 'EOF'
 #!/bin/sh
+APP=obs
 HERE="$(dirname "$(readlink -f $0)")"
 export UNION_PRELOAD=$HERE
 export JUNEST_HOME=$HERE/.junest
 export PATH=$HERE/.local/share/junest/bin/:$PATH
 mkdir -p $HOME/.cache
-echo "obs $@" | $HERE/.local/share/junest/bin/junest proot -n -b "--bind=/home --bind=/home/$(echo $USER) --bind=/media --bind=/opt"
+$HERE/.local/share/junest/bin/junest proot -n -b "--bind=/home --bind=/home/$(echo $USER) --bind=/media --bind=/opt --bind=/etc" 2> /dev/null -- $APP "$@"
 EOF
 chmod a+x ./$APP.AppDir/AppRun
 
