@@ -49,7 +49,7 @@ export UNION_PRELOAD=$HERE
 export JUNEST_HOME=$HERE/.junest
 export PATH=$HERE/.local/share/junest/bin/:$PATH
 mkdir -p $HOME/.cache
-$HERE/.local/share/junest/bin/junest proot -n -b "--bind=/home --bind=/home/$(echo $USER) --bind=/media --bind=/opt --bind=/etc --bind=/usr/lib/locale --bind=/usr/share/fonts" 2> /dev/null -- $APP "$@"
+$HERE/.local/share/junest/bin/junest proot -n -b "--bind=/home --bind=/home/$(echo $USER) --bind=/media --bind=/opt --bind=/etc --bind=/usr/lib/locale --bind=/usr/lib/dri --bind=/usr/lib/x86_64-linux-gnu/dri --bind=/etc --bind=/var --bind=/var/tmp --bind=/usr/include --bind=/usr/share/fonts" 2> /dev/null -- $APP "$@"
 EOF
 chmod a+x ./$APP.AppDir/AppRun
 
@@ -80,13 +80,76 @@ rm -R -f ./$APP.AppDir/.junest/usr/lib/dri/virtio_gpu_dri.so
 rm -R -f ./$APP.AppDir/.junest/usr/lib/dri/vmwgfx_dri.so
 rm -R -f ./$APP.AppDir/.junest/usr/lib/dri/zink_dri.so
 rm -R -f ./$APP.AppDir/.junest/usr/lib/systemd*
-rm -R -f ./$APP.AppDir/.junest/usr/lib/audit ./$APP.AppDir/.junest/usr/lib/avahi ./$APP.AppDir/.junest/usr/lib/awk ./$APP.AppDir/.junest/usr/lib/bash ./$APP.AppDir/.junest/usr/lib/bellagio ./$APP.AppDir/.junest/usr/lib/bfd-plugins ./$APP.AppDir/.junest/usr/lib/binfmt.d ./$APP.AppDir/.junest/usr/lib/cairo ./$APP.AppDir/.junest/usr/lib/cmake ./$APP.AppDir/.junest/usr/lib/coreutils ./$APP.AppDir/.junest/usr/lib/cryptsetup ./$APP.AppDir/.junest/usr/lib/dbus-1.0 ./$APP.AppDir/.junest/usr/lib/depmod.d ./$APP.AppDir/.junest/usr/lib/e2fsprogs ./$APP.AppDir/.junest/usr/lib/engines-3 ./$APP.AppDir/.junest/usr/lib/environment.d ./$APP.AppDir/.junest/usr/lib/gawk ./$APP.AppDir/.junest/usr/lib/gconv ./$APP.AppDir/.junest/usr/lib/gdk-pixbuf-2.0 ./$APP.AppDir/.junest/usr/lib/getconf ./$APP.AppDir/.junest/usr/lib/gettext ./$APP.AppDir/.junest/usr/lib/gimp ./$APP.AppDir/.junest/usr/lib/gio ./$APP.AppDir/.junest/usr/lib/girepository-1.0 ./$APP.AppDir/.junest/usr/lib/git-core ./$APP.AppDir/.junest/usr/lib/glib-2.0 ./$APP.AppDir/.junest/usr/lib/gnupg ./$APP.AppDir/.junest/usr/lib/icu ./$APP.AppDir/.junest/usr/lib/initcpio ./$APP.AppDir/.junest/usr/lib/kernel ./$APP.AppDir/.junest/usr/lib/krb5 ./$APP.AppDir/.junest/usr/lib/libcamera ./$APP.AppDir/.junest/usr/lib/libfakeroot ./$APP.AppDir/.junest/usr/lib/libinput ./$APP.AppDir/.junest/usr/lib/libnl ./$APP.AppDir/.junest/usr/lib/libv4l ./$APP.AppDir/.junest/usr/lib/locale ./$APP.AppDir/.junest/usr/lib/modprobe.d ./$APP.AppDir/.junest/usr/lib/modules-load.d ./$APP.AppDir/.junest/usr/lib/mpg123 ./$APP.AppDir/.junest/usr/lib/objects-RelWithDebInfo ./$APP.AppDir/.junest/usr/lib/omxloaders ./$APP.AppDir/.junest/usr/lib/openjpeg-2.5 ./$APP.AppDir/.junest/usr/lib/ossl-modules ./$APP.AppDir/.junest/usr/lib/p11-kit ./$APP.AppDir/.junest/usr/lib/pam.d ./$APP.AppDir/.junest/usr/lib/perl5 ./$APP.AppDir/.junest/usr/lib/pkcs11 ./$APP.AppDir/.junest/usr/lib/pkgconfig ./$APP.AppDir/.junest/usr/lib/python3.11 ./$APP.AppDir/.junest/usr/lib/sasl2 ./$APP.AppDir/.junest/usr/lib/security ./$APP.AppDir/.junest/usr/lib/spa-0.2 ./$APP.AppDir/.junest/usr/lib/sysctl.d ./$APP.AppDir/.junest/usr/lib/sysusers.d ./$APP.AppDir/.junest/usr/lib/tmpfiles.d ./$APP.AppDir/.junest/usr/lib/ts ./$APP.AppDir/.junest/usr/lib/udev ./$APP.AppDir/.junest/usr/lib/utempter ./$APP.AppDir/.junest/usr/lib/vdpau ./$APP.AppDir/.junest/usr/lib/xkbcommon ./$APP.AppDir/.junest/usr/lib/xtables
+rm -R -f ./$APP.AppDir/.junest/usr/lib/audit
+rm -R -f ./$APP.AppDir/.junest/usr/lib/avahi
+rm -R -f ./$APP.AppDir/.junest/usr/lib/awk
+rm -R -f ./$APP.AppDir/.junest/usr/lib/bash
+rm -R -f ./$APP.AppDir/.junest/usr/lib/bellagio
+rm -R -f ./$APP.AppDir/.junest/usr/lib/bfd-plugins
+rm -R -f ./$APP.AppDir/.junest/usr/lib/binfmt.d
+rm -R -f ./$APP.AppDir/.junest/usr/lib/cairo
+rm -R -f ./$APP.AppDir/.junest/usr/lib/cmake
+rm -R -f ./$APP.AppDir/.junest/usr/lib/coreutils
+rm -R -f ./$APP.AppDir/.junest/usr/lib/cryptsetup
+rm -R -f ./$APP.AppDir/.junest/usr/lib/dbus-1.0
+rm -R -f ./$APP.AppDir/.junest/usr/lib/depmod.d
+rm -R -f ./$APP.AppDir/.junest/usr/lib/e2fsprogs
+rm -R -f ./$APP.AppDir/.junest/usr/lib/engines-3
+rm -R -f ./$APP.AppDir/.junest/usr/lib/environment.d
+rm -R -f ./$APP.AppDir/.junest/usr/lib/gawk
+rm -R -f ./$APP.AppDir/.junest/usr/lib/gconv
+rm -R -f ./$APP.AppDir/.junest/usr/lib/gdk-pixbuf-2.0
+rm -R -f ./$APP.AppDir/.junest/usr/lib/getconf
+rm -R -f ./$APP.AppDir/.junest/usr/lib/gettext
+rm -R -f ./$APP.AppDir/.junest/usr/lib/gimp
+rm -R -f ./$APP.AppDir/.junest/usr/lib/gio
+rm -R -f ./$APP.AppDir/.junest/usr/lib/girepository-1.0
+rm -R -f ./$APP.AppDir/.junest/usr/lib/git-core
+rm -R -f ./$APP.AppDir/.junest/usr/lib/glib-2.0
+rm -R -f ./$APP.AppDir/.junest/usr/lib/gnupg
+rm -R -f ./$APP.AppDir/.junest/usr/lib/icu
+rm -R -f ./$APP.AppDir/.junest/usr/lib/initcpio
+rm -R -f ./$APP.AppDir/.junest/usr/lib/kernel
+rm -R -f ./$APP.AppDir/.junest/usr/lib/krb5
+rm -R -f ./$APP.AppDir/.junest/usr/lib/libcamera
+rm -R -f ./$APP.AppDir/.junest/usr/lib/libfakeroot
+rm -R -f ./$APP.AppDir/.junest/usr/lib/libinput
+rm -R -f ./$APP.AppDir/.junest/usr/lib/libnl
+rm -R -f ./$APP.AppDir/.junest/usr/lib/libv4l
+rm -R -f ./$APP.AppDir/.junest/usr/lib/locale
+rm -R -f ./$APP.AppDir/.junest/usr/lib/modprobe.d
+rm -R -f ./$APP.AppDir/.junest/usr/lib/modules-load.d
+rm -R -f ./$APP.AppDir/.junest/usr/lib/mpg123
+rm -R -f ./$APP.AppDir/.junest/usr/lib/objects-RelWithDebInfo
+rm -R -f ./$APP.AppDir/.junest/usr/lib/omxloaders
+rm -R -f ./$APP.AppDir/.junest/usr/lib/openjpeg-2.5
+rm -R -f ./$APP.AppDir/.junest/usr/lib/ossl-modules
+rm -R -f ./$APP.AppDir/.junest/usr/lib/p11-kit
+rm -R -f ./$APP.AppDir/.junest/usr/lib/pam.d
+rm -R -f ./$APP.AppDir/.junest/usr/lib/perl5
+rm -R -f ./$APP.AppDir/.junest/usr/lib/pkcs11
+rm -R -f ./$APP.AppDir/.junest/usr/lib/pkgconfig
+rm -R -f ./$APP.AppDir/.junest/usr/lib/python3.11
+rm -R -f ./$APP.AppDir/.junest/usr/lib/sasl2
+rm -R -f ./$APP.AppDir/.junest/usr/lib/security
+rm -R -f ./$APP.AppDir/.junest/usr/lib/spa-0.2
+rm -R -f ./$APP.AppDir/.junest/usr/lib/sysctl.d
+rm -R -f ./$APP.AppDir/.junest/usr/lib/sysusers.d
+rm -R -f ./$APP.AppDir/.junest/usr/lib/tmpfiles.d
+rm -R -f ./$APP.AppDir/.junest/usr/lib/ts
+rm -R -f ./$APP.AppDir/.junest/usr/lib/udev
+rm -R -f ./$APP.AppDir/.junest/usr/lib/utempter
+rm -R -f ./$APP.AppDir/.junest/usr/lib/vdpau
+rm -R -f ./$APP.AppDir/.junest/usr/lib/xkbcommon
+rm -R -f ./$APP.AppDir/.junest/usr/lib/xtables
 
 mkdir ./save
 mv ./$APP.AppDir/.junest/usr/share/obs ./save/obs
 mv ./$APP.AppDir/.junest/usr/share/glvnd ./save/glvnd
 rm -R -f ./$APP.AppDir/.junest/usr/share/*
 mv ./save/* ./$APP.AppDir/.junest/usr/share/
+
+rm -R -f ./$APP.AppDir/.junest/usr/include
 
 # REMOVE THE INBUILT HOME (optional)
 rm -R -f ./$APP.AppDir/.junest/home
