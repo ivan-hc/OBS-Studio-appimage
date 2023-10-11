@@ -2,8 +2,8 @@
 
 # NAME OF THE APP BY REPLACING "SAMPLE"
 APP=obs-studio
-BIN="obs" #CHANGE THIS IF THE NAME OF THE BINARY IS DIFFERENT FROM "$APP" (for example, the binary of "obs-studio" is "obs")
-DEPENDENCES="python3" #SYNTAX: "APP1 APP2 APP3 APP4...", LEAVE BLANK IF NO OTHER DEPENDENCES ARE NEEDED
+BIN="obs"
+DEPENDENCES="python3"
 #BASICSTUFF="binutils gzip"
 #COMPILERS="gcc"
 
@@ -14,7 +14,15 @@ done
 VERSION=$(cat ./version | grep -w -v "" | head -1)
 #VERSIONAUR=$(wget -q https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h=$APP -O - | grep pkgver | head -1 | cut -c 8-)
 
-# THIS WILL DO ALL WORK INTO THE CURRENT DIRECTORY
+# CREATE THE APPDIR (DON'T TOUCH THIS)...
+wget -q https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O appimagetool
+chmod a+x appimagetool
+mkdir $APP.AppDir
+
+# ENTER THE APPDIR
+cd $APP.AppDir
+
+# SET APPDIR AS A TEMPORARY $HOME DIRECTORY, THIS WILL DO ALL WORK INTO THE APPDIR
 HOME="$(dirname "$(readlink -f $0)")" 
 
 # DOWNLOAD AND INSTALL JUNEST (DON'T TOUCH THIS)
@@ -26,12 +34,20 @@ echo "
 [multilib]
 Include = /etc/pacman.d/mirrorlist" >> ./.junest/etc/pacman.conf
 
+# ENABLE CHAOTIC-AUR
+###./.local/share/junest/bin/junest -- sudo pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
+###./.local/share/junest/bin/junest -- sudo pacman-key --lsign-key 3056513887B78AEB
+###./.local/share/junest/bin/junest -- sudo pacman --noconfirm -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
+###echo "
+###[chaotic-aur]
+###Include = /etc/pacman.d/chaotic-mirrorlist" >> ./.junest/etc/pacman.conf
+
 # CUSTOM MIRRORLIST, THIS SHOULD SPEEDUP THE INSTALLATION OF THE PACKAGES IN PACMAN (COMMENT EVERYTHING TO USE THE DEFAULT MIRROR)
 COUNTRY=$(curl -i ipinfo.io | grep country | cut -c 15- | cut -c -2)
 rm -R ./.junest/etc/pacman.d/mirrorlist
 wget -q https://archlinux.org/mirrorlist/?country="$(echo $COUNTRY)" -O - | sed 's/#Server/Server/g' >> ./.junest/etc/pacman.d/mirrorlist
 
-# INSTALL THE APP, BEING JUNEST STRICTLY MINIMAL, YOU NEED TO ADD ALL YOU NEED, INCLUDING BINUTILS AND GZIP
+# INSTALL THE APP
 ./.local/share/junest/bin/junest -- sudo pacman -Syy
 ./.local/share/junest/bin/junest -- sudo pacman --noconfirm -Syu
 
@@ -50,66 +66,64 @@ sed -i 's/LANG=${LANG:-C}/LANG=$LANG/g' ./.junest/etc/profile.d/locale.sh
 #./.local/share/junest/bin/junest -- sudo pacman --noconfirm -S glibc gzip
 #./.local/share/junest/bin/junest -- sudo locale-gen
 
-# CREATE THE APPDIR (DON'T TOUCH THIS)...
-wget -q https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O appimagetool
-chmod a+x appimagetool
-mkdir $APP.AppDir
-cp -r ./.local ./$APP.AppDir/
-cp -r ./.junest ./$APP.AppDir/
-
 # ...ADD THE ICON AND THE DESKTOP FILE AT THE ROOT OF THE APPDIR...
 LAUNCHER=$(grep -iRl $BIN ./.junest/usr/share/applications/* | grep ".desktop" | head -1)
-cp -r "$LAUNCHER" ./$APP.AppDir/
+cp -r "$LAUNCHER" ./
 ICON=$(cat $LAUNCHER | grep "Icon=" | cut -c 6-)
-cp -r ./.junest/usr/share/icons/hicolor/22x22/apps/*$ICON* ./$APP.AppDir/ 2>/dev/null
-cp -r ./.junest/usr/share/icons/hicolor/24x24/apps/*$ICON* ./$APP.AppDir/ 2>/dev/null
-cp -r ./.junest/usr/share/icons/hicolor/32x32/apps/*$ICON* ./$APP.AppDir/ 2>/dev/null
-cp -r ./.junest/usr/share/icons/hicolor/48x48/apps/*$ICON* ./$APP.AppDir/ 2>/dev/null
-cp -r ./.junest/usr/share/icons/hicolor/64x64/apps/*$ICON* ./$APP.AppDir/ 2>/dev/null
-cp -r ./.junest/usr/share/icons/hicolor/128x128/apps/*$ICON* ./$APP.AppDir/ 2>/dev/null
-cp -r ./.junest/usr/share/icons/hicolor/192x192/apps/*$ICON* ./$APP.AppDir/ 2>/dev/null
-cp -r ./.junest/usr/share/icons/hicolor/256x256/apps/*$ICON* ./$APP.AppDir/ 2>/dev/null
-cp -r ./.junest/usr/share/icons/hicolor/512x512/apps/*$ICON* ./$APP.AppDir/ 2>/dev/null
-cp -r ./.junest/usr/share/icons/hicolor/scalable/apps/*$ICON* ./$APP.AppDir/ 2>/dev/null
+cp -r ./.junest/usr/share/icons/hicolor/22x22/apps/*$ICON* ./ 2>/dev/null
+cp -r ./.junest/usr/share/icons/hicolor/24x24/apps/*$ICON* ./ 2>/dev/null
+cp -r ./.junest/usr/share/icons/hicolor/32x32/apps/*$ICON* ./ 2>/dev/null
+cp -r ./.junest/usr/share/icons/hicolor/48x48/apps/*$ICON* ./ 2>/dev/null
+cp -r ./.junest/usr/share/icons/hicolor/64x64/apps/*$ICON* ./ 2>/dev/null
+cp -r ./.junest/usr/share/icons/hicolor/128x128/apps/*$ICON* ./ 2>/dev/null
+cp -r ./.junest/usr/share/icons/hicolor/192x192/apps/*$ICON* ./ 2>/dev/null
+cp -r ./.junest/usr/share/icons/hicolor/256x256/apps/*$ICON* ./ 2>/dev/null
+cp -r ./.junest/usr/share/icons/hicolor/512x512/apps/*$ICON* ./ 2>/dev/null
+cp -r ./.junest/usr/share/icons/hicolor/scalable/apps/*$ICON* ./ 2>/dev/null
+cp -r ./.junest/usr/share/pixmaps/*$ICON* ./ 2>/dev/null
 
 # TEST IF THE DESKTOP FILE AND THE ICON ARE IN THE ROOT OF THE FUTURE APPIMAGE (./*AppDir/*)
-if test -f ./$APP.AppDir/*.desktop; then
+if test -f ./*.desktop; then
 	echo "The .desktop file is available in $APP.AppDir/"
 else 
-	cat <<-HEREDOC >> "./$APP.AppDir/$APP.desktop"
+	cat <<-HEREDOC >> "./$APP.desktop"
 	[Desktop Entry]
 	Version=1.0
 	Type=Application
-	Name=SAMPLE
+	Name=NAME
 	Comment=
 	Exec=BINARY
 	Icon=tux
+	Categories=Utility;
 	Terminal=true
 	StartupNotify=true
 	HEREDOC
-	sed -i "s#BINARY#$BIN#g" ./$APP.AppDir/$APP.desktop
-	sed -i "s#SAMPLE#$(echo $APP | tr a-z A-Z)#g" ./$APP.AppDir/$APP.desktop
-	wget https://raw.githubusercontent.com/Portable-Linux-Apps/Portable-Linux-Apps.github.io/main/favicon.ico -O ./$APP.AppDir/tux.png
+	sed -i "s#BINARY#$BIN#g" ./$APP.desktop
+	sed -i "s#Name=NAME#Name=$(echo $APP | tr a-z A-Z)#g" ./$APP.desktop
+	wget https://raw.githubusercontent.com/Portable-Linux-Apps/Portable-Linux-Apps.github.io/main/favicon.ico -O ./tux.png
 fi
 
 # ...AND FINALLY CREATE THE APPRUN, IE THE MAIN SCRIPT TO RUN THE APPIMAGE!
 # EDIT THE FOLLOWING LINES IF YOU THINK SOME ENVIRONMENT VARIABLES ARE MISSING
-cat >> ./$APP.AppDir/AppRun << 'EOF'
+cat >> ./AppRun << 'EOF'
 #!/bin/sh
 HERE="$(dirname "$(readlink -f $0)")"
 export UNION_PRELOAD=$HERE
 export JUNEST_HOME=$HERE/.junest
 export PATH=$HERE/.local/share/junest/bin/:$PATH
 mkdir -p $HOME/.cache
+EXEC=$(grep -e '^Exec=.*' "${HERE}"/*.desktop | head -n 1 | cut -d "=" -f 2- | sed -e 's|%.||g')
 $HERE/.local/share/junest/bin/junest proot -n -b "--bind=/home --bind=/home/$(echo $USER) --bind=/media --bind=/mnt --bind=/opt --bind=/usr/lib/locale --bind=/etc/fonts --bind=/usr/share/fonts" 2> /dev/null -- BINARY "$@"
 EOF
-chmod a+x ./$APP.AppDir/AppRun
-sed -i "s#BINARY#$BIN#g" ./$APP.AppDir/AppRun
+chmod a+x ./AppRun
 
 # REMOVE "READ-ONLY FILE SYSTEM" ERRORS
-sed -i 's#${JUNEST_HOME}/usr/bin/junest_wrapper#${HOME}/.cache/junest_wrapper.old#g' ./$APP.AppDir/.local/share/junest/lib/core/wrappers.sh
-sed -i 's/rm -f "${JUNEST_HOME}${bin_path}_wrappers/#rm -f "${JUNEST_HOME}${bin_path}_wrappers/g' ./$APP.AppDir/.local/share/junest/lib/core/wrappers.sh
-sed -i 's/ln/#ln/g' ./$APP.AppDir/.local/share/junest/lib/core/wrappers.sh
+sed -i 's#${JUNEST_HOME}/usr/bin/junest_wrapper#${HOME}/.cache/junest_wrapper.old#g' ./.local/share/junest/lib/core/wrappers.sh
+sed -i 's/rm -f "${JUNEST_HOME}${bin_path}_wrappers/#rm -f "${JUNEST_HOME}${bin_path}_wrappers/g' ./.local/share/junest/lib/core/wrappers.sh
+sed -i 's/ln/#ln/g' ./.local/share/junest/lib/core/wrappers.sh
+
+# EXIT THE APPDIR
+cd ..
 
 # REMOVE SOME BLOATWARES
 find ./$APP.AppDir/.junest/usr/share/doc/* -not -iname "*$BIN*" -a -not -name "." -delete #REMOVE ALL DOCUMENTATION NOT RELATED TO THE APP
@@ -1315,9 +1329,9 @@ mv ./$APP.AppDir/.junest/usr/share/glvnd ./save/glvnd
 rm -R -f ./$APP.AppDir/.junest/usr/share/*
 mv ./save/* ./$APP.AppDir/.junest/usr/share/
 
-rm -R -f ./$APP.AppDir/.junest/var
-rm -R -f ./$APP.AppDir/.junest/var/*
 rm -R -f ./$APP.AppDir/.junest/var/* #REMOVE ALL PACKAGES DOWNLOADED WITH THE PACKAGE MANAGER
+
+# ADDITIONAL REMOVALS
 
 # REMOVE THE INBUILT HOME
 rm -R -f ./$APP.AppDir/.junest/home
