@@ -1325,6 +1325,7 @@ rm -R -f ./$APP.AppDir/.junest/home
 # ENABLE MOUNTPOINTS
 mkdir -p ./$APP.AppDir/.junest/home
 mkdir -p ./$APP.AppDir/.junest/media
+mkdir -p ./$APP.AppDir/.junest/usr/share/fonts
 
 # CREATE THE APPIMAGE
 ARCH=x86_64 ./appimagetool -n ./$APP.AppDir
