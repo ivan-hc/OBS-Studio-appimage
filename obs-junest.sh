@@ -176,9 +176,7 @@ _binlibs(){
 	mv ./$APP.AppDir/.junest/usr/lib/*$BIN* ./save/
 	mv ./$APP.AppDir/.junest/usr/lib/libdw* ./save/
 	mv ./$APP.AppDir/.junest/usr/lib/libelf* ./save/
-	mkdir ./save/dri
-	mv ./$APP.AppDir/.junest/usr/lib/dri/swrast_dri.so ./save/dri/
-	SHARESAVED="EGL gl jack libdrm libedit libLLVM libsensors libva libwayland libxcb libxshmfence pen pipewire pulse qt vpl"
+	SHARESAVED="glvnd" # Enter here keywords or file/folder names to save in /usr/lib. By default, the names of the folders that you will save in /usr/share are selected also here.
 	for arg in $SHARESAVED; do
 		for var in $arg; do
  			mv ./$APP.AppDir/.junest/usr/lib/*"$arg"* ./save/
@@ -191,12 +189,26 @@ _binlibs(){
 			cp --parent ./$APP.AppDir/.junest/usr/lib/*/$arg* ./save/
 			cp --parent ./$APP.AppDir/.junest/usr/lib/*/*/$arg* ./save/
 			cp --parent ./$APP.AppDir/.junest/usr/lib/*/*/*/$arg* ./save/
+			cp --parent ./$APP.AppDir/.junest/usr/lib/*/*/*/*/$arg* ./save/
 			mv $(find ./save/ | sort | grep "usr/lib" | head -1)/* ./save/
-			rm -R -f $(find ./save/ | sort | grep ".AppDir" | head -1)
 		done 
 	done
-	
+	rm -R -f $(find ./save/ | sort | grep ".AppDir" | head -1)
 	rm list
+}
+
+_include_swrast_dri(){
+	mkdir ./save/dri
+	mv ./$APP.AppDir/.junest/usr/lib/dri/swrast_dri.so ./save/dri/
+}
+
+_libkeywords(){
+	LIBSAVED="EGL gl jack libdrm libedit libLLVM libsensors libva libwayland libxcb libxshmfence loopback pen pipewire pulse qt v4l vpl" # Enter here keywords or file/folder names to save in /usr/lib.
+	for arg in $LIBSAVED; do
+		for var in $arg; do
+ 			mv ./$APP.AppDir/.junest/usr/lib/*"$arg"* ./save/
+		done
+	done
 }
 
 _liblibs(){
@@ -204,6 +216,7 @@ _liblibs(){
 	readelf -d ./save/*/* | grep .so | sed 's:.* ::' | cut -c 2- | sed 's/\(^.*so\).*$/\1/' | uniq >> ./list
 	readelf -d ./save/*/*/* | grep .so | sed 's:.* ::' | cut -c 2- | sed 's/\(^.*so\).*$/\1/' | uniq >> ./list
 	readelf -d ./save/*/*/*/* | grep .so | sed 's:.* ::' | cut -c 2- | sed 's/\(^.*so\).*$/\1/' | uniq >> ./list
+	readelf -d ./save/*/*/*/*/* | grep .so | sed 's:.* ::' | cut -c 2- | sed 's/\(^.*so\).*$/\1/' | uniq >> ./list
 	ARGS=$(tail -n +2 ./list | sort -u | uniq)
 	for arg in $ARGS; do
 		for var in $arg; do
@@ -211,10 +224,11 @@ _liblibs(){
 			cp --parent ./$APP.AppDir/.junest/usr/lib/*/$arg* ./save/
 			cp --parent ./$APP.AppDir/.junest/usr/lib/*/*/$arg* ./save/
 			cp --parent ./$APP.AppDir/.junest/usr/lib/*/*/*/$arg* ./save/
+			cp --parent ./$APP.AppDir/.junest/usr/lib/*/*/*/*/$arg* ./save/
 			mv $(find ./save/ | sort | grep "usr/lib" | head -1)/* ./save/
-			rm -R -f $(find ./save/ | sort | grep ".AppDir" | head -1)
 		done 
 	done
+	rm -R -f $(find ./save/ | sort | grep ".AppDir" | head -1)
 	rm list
 }
 
@@ -224,6 +238,10 @@ mv ./save/* ./$APP.AppDir/.junest/usr/lib/
 }
 
 _binlibs
+
+_include_swrast_dri
+
+_libkeywords
 
 _liblibs
 _liblibs
@@ -270,4 +288,4 @@ mkdir -p ./$APP.AppDir/.junest/media
 
 # CREATE THE APPIMAGE
 ARCH=x86_64 ./appimagetool -n ./$APP.AppDir
-mv ./*AppImage ./"$(cat ./$APP.AppDir/*.desktop | grep 'Name=' | head -1 | cut -c 6- | sed 's/ /-/g')"_"$VERSION""$VERSIONAUR"-archimage2.0-x86_64.AppImage
+mv ./*AppImage ./"$(cat ./$APP.AppDir/*.desktop | grep 'Name=' | head -1 | cut -c 6- | sed 's/ /-/g')"_"$VERSION""$VERSIONAUR"-archimage2.1-x86_64.AppImage
