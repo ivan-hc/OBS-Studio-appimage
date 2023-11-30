@@ -130,9 +130,11 @@ cd ..
 # EXTRACT PACKAGE CONTENT
 mkdir base
 tar fx $APP.AppDir/.junest/var/cache/pacman/pkg/$APP*.zst -C ./base/
+
+mkdir deps
 for arg in $DEPENDENCES; do
 	for var in $arg; do
- 		tar fx $APP.AppDir/.junest/var/cache/pacman/pkg/$arg*.zst -C ./base/
+ 		tar fx $APP.AppDir/.junest/var/cache/pacman/pkg/$arg*.zst -C ./deps/
 	done
 done
 
@@ -171,7 +173,7 @@ _savebins(){
 	done
 	mv ./$APP.AppDir/.junest/usr/bin/* ./junest-backups/usr/bin/
 	mv ./save/* ./$APP.AppDir/.junest/usr/bin/
-	mv ./base/bin/* ./$APP.AppDir/.junest/usr/bin/
+	mv ./base/usr/bin/* ./$APP.AppDir/.junest/usr/bin/
 	rmdir save
 }
 _savebins
@@ -196,13 +198,10 @@ _binlibs(){
 	for arg in $ARGS; do
 		for var in $arg; do
 			mv ./$APP.AppDir/.junest/usr/lib/$arg* ./save/
-			cp --parent ./$APP.AppDir/.junest/usr/lib/*/$arg* ./save/
-			cp --parent ./$APP.AppDir/.junest/usr/lib/*/*/$arg* ./save/
-			cp --parent ./$APP.AppDir/.junest/usr/lib/*/*/*/$arg* ./save/
-			cp --parent ./$APP.AppDir/.junest/usr/lib/*/*/*/*/$arg* ./save/
-			mv $(find ./save/ | sort | grep "usr/lib" | head -1)/* ./save/
+			find ./$APP.AppDir/.junest/usr/lib/ -name $arg -exec cp -r --parents -t save/ {} +
 		done 
 	done
+	rsync -av ./save/$APP.AppDir/.junest/usr/lib/* ./save/
 	rm -R -f $(find ./save/ | sort | grep ".AppDir" | head -1)
 	rm list
 }
@@ -232,25 +231,27 @@ _liblibs(){
 	readelf -d ./base/*/*/* | grep .so | sed 's:.* ::' | cut -c 2- | sed 's/\(^.*so\).*$/\1/' | uniq >> ./list
 	readelf -d ./base/*/*/*/* | grep .so | sed 's:.* ::' | cut -c 2- | sed 's/\(^.*so\).*$/\1/' | uniq >> ./list
 	readelf -d ./base/*/*/*/*/* | grep .so | sed 's:.* ::' | cut -c 2- | sed 's/\(^.*so\).*$/\1/' | uniq >> ./list
+  	readelf -d ./deps/* | grep .so | sed 's:.* ::' | cut -c 2- | sed 's/\(^.*so\).*$/\1/' | uniq >> ./list
+	readelf -d ./deps/*/* | grep .so | sed 's:.* ::' | cut -c 2- | sed 's/\(^.*so\).*$/\1/' | uniq >> ./list
+	readelf -d ./deps/*/*/* | grep .so | sed 's:.* ::' | cut -c 2- | sed 's/\(^.*so\).*$/\1/' | uniq >> ./list
+	readelf -d ./deps/*/*/*/* | grep .so | sed 's:.* ::' | cut -c 2- | sed 's/\(^.*so\).*$/\1/' | uniq >> ./list
+	readelf -d ./deps/*/*/*/*/* | grep .so | sed 's:.* ::' | cut -c 2- | sed 's/\(^.*so\).*$/\1/' | uniq >> ./list
 	ARGS=$(tail -n +2 ./list | sort -u | uniq)
 	for arg in $ARGS; do
 		for var in $arg; do
 			mv ./$APP.AppDir/.junest/usr/lib/$arg* ./save/
-			cp --parent ./$APP.AppDir/.junest/usr/lib/*/$arg* ./save/
-			cp --parent ./$APP.AppDir/.junest/usr/lib/*/*/$arg* ./save/
-			cp --parent ./$APP.AppDir/.junest/usr/lib/*/*/*/$arg* ./save/
-			cp --parent ./$APP.AppDir/.junest/usr/lib/*/*/*/*/$arg* ./save/
-			mv $(find ./save/ | sort | grep "usr/lib" | head -1)/* ./save/
+			find ./$APP.AppDir/.junest/usr/lib/ -name $arg -exec cp -r --parents -t save/ {} +
 		done 
 	done
+	rsync -av ./save/$APP.AppDir/.junest/usr/lib/* ./save/
 	rm -R -f $(find ./save/ | sort | grep ".AppDir" | head -1)
 	rm list
 }
 
 _mvlibs(){
-mv ./$APP.AppDir/.junest/usr/lib/* ./junest-backups/usr/lib/
-mv ./save/* ./$APP.AppDir/.junest/usr/lib/
-mv ./base/lib/* ./$APP.AppDir/.junest/usr/lib/
+	mv ./$APP.AppDir/.junest/usr/lib/* ./junest-backups/usr/lib/
+	mv ./save/* ./$APP.AppDir/.junest/usr/lib/
+	mv ./base/usr/lib/* ./$APP.AppDir/.junest/usr/lib/
 }
 
 _binlibs
@@ -289,7 +290,7 @@ _saveshare(){
 	done
 	mv ./$APP.AppDir/.junest/usr/share/* ./junest-backups/usr/share/
 	mv ./save/* ./$APP.AppDir/.junest/usr/share/
-	mv ./base/share/* ./$APP.AppDir/.junest/usr/share/
+	mv ./base/usr/share/* ./$APP.AppDir/.junest/usr/share/
 	rmdir save
 }
 _saveshare
@@ -305,4 +306,4 @@ mkdir -p ./$APP.AppDir/.junest/media
 
 # CREATE THE APPIMAGE
 ARCH=x86_64 ./appimagetool -n ./$APP.AppDir
-mv ./*AppImage ./"$(cat ./$APP.AppDir/*.desktop | grep 'Name=' | head -1 | cut -c 6- | sed 's/ /-/g')"_"$VERSION""$VERSIONAUR"-archimage2.1-1-x86_64.AppImage
+mv ./*AppImage ./"$(cat ./$APP.AppDir/*.desktop | grep 'Name=' | head -1 | cut -c 6- | sed 's/ /-/g')"_"$VERSION""$VERSIONAUR"-archimage2.1-2-x86_64.AppImage
