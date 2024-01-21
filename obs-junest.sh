@@ -318,7 +318,7 @@ _saveshare 2> /dev/null
 
 # RSYNC DEPENDENCES
 #rsync -av ./deps/usr/bin/* ./$APP.AppDir/.junest/usr/bin/
-rsync -av ./deps/usr/lib/* ./$APP.AppDir/.junest/usr/lib/
+#rsync -av ./deps/usr/lib/* ./$APP.AppDir/.junest/usr/lib/
 #rsync -av ./deps/usr/share/* ./$APP.AppDir/.junest/usr/share/
 
 # ADDITIONAL REMOVALS
@@ -338,4 +338,4 @@ mkdir -p ./$APP.AppDir/.junest/run/user
 
 # CREATE THE APPIMAGE
 ARCH=x86_64 ./appimagetool -n ./$APP.AppDir
-mv ./*AppImage ./"$(cat ./$APP.AppDir/*.desktop | grep 'Name=' | head -1 | cut -c 6- | sed 's/ /-/g')"_"$VERSION"-archimage3-x86_64.AppImage
+mv ./*AppImage ./"$(cat ./$APP.AppDir/*.desktop | grep 'Name=' | head -1 | cut -c 6- | sed 's/ /-/g')"_"$VERSION"-archimage3.1-x86_64.AppImage
