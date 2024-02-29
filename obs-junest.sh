@@ -94,6 +94,7 @@ cat >> ./AppRun << 'EOF'
 #!/bin/sh
 HERE="$(dirname "$(readlink -f $0)")"
 export UNION_PRELOAD=$HERE
+export QT_QPA_PLATFORM=xcb
 export JUNEST_HOME=$HERE/.junest
 export PATH=$PATH:$HERE/.local/share/junest/bin
 if test -d /media; then
