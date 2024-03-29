@@ -3,9 +3,9 @@
 # NAME OF THE APP BY REPLACING "SAMPLE"
 APP=obs-studio
 BIN="obs"
-DEPENDENCES="ca-certificates python"
-#BASICSTUFF="binutils debugedit gzip"
-#COMPILERS="base-devel"
+DEPENDENCES="ca-certificates python libuiohook"
+BASICSTUFF="binutils debugedit gzip"
+COMPILERS="base-devel"
 
 # CREATE THE APPDIR (DON'T TOUCH THIS)...
 if ! test -f ./appimagetool; then
