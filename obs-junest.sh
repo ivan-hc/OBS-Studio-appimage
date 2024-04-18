@@ -202,7 +202,7 @@ rm -R -f ./$APP.AppDir/.junest/var/* #REMOVE ALL PACKAGES DOWNLOADED WITH THE PA
 
 # SAVE FILES USING KEYWORDS
 BINSAVED="certificates SAVEBINSPLEASE" # Enter here keywords to find and save in /usr/bin
-SHARESAVED="certificates glvnd" # Enter here keywords or file/folder names to save in both /usr/share and /usr/lib
+SHARESAVED="certificates glvnd alsa" # Enter here keywords or file/folder names to save in both /usr/share and /usr/lib
 LIBSAVED="pk p11 EGL gl libdrm libedit libLLVM libsensors libva libwayland libxcb libxshmfence loopback pen qt v4l vpl alsa jack pipewire pulse" # Enter here keywords or file/folder names to save in /usr/lib
 
 # STEP 2, FUNCTION TO SAVE THE BINARIES IN /usr/bin THAT ARE NEEDED TO MADE JUNEST WORK, PLUS THE MAIN BINARY/BINARIES OF THE APP
