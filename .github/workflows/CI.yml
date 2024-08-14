@@ -18,7 +18,7 @@ jobs:
       if: always()
       run: |
         sudo apt update
-        sudo apt install libfuse2
+        sudo apt install libfuse2 desktop-file-utils
         wget https://raw.githubusercontent.com/ivan-hc/OBS-Studio-appimage/main/obs-junest.sh
         chmod a+x ./obs-junest.sh
         ./obs-junest.sh
