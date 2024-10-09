@@ -17,7 +17,7 @@ jobs:
     - name: build
       if: always()
       run: |
-        sudo apt update && sudo apt install libfuse2 desktop-file-utils
+        sudo apt update && sudo apt install libfuse2 desktop-file-utils appstream
         wget https://raw.githubusercontent.com/ivan-hc/OBS-Studio-appimage/main/obs-junest.sh
         chmod a+x ./obs-junest.sh
         ./obs-junest.sh
