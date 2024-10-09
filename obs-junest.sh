@@ -3,9 +3,11 @@
 # NAME OF THE APP BY REPLACING "SAMPLE"
 APP=obs-studio
 BIN="obs"
-DEPENDENCES="ca-certificates python libuiohook kvantum kvantum-qt5 qt5ct qt6ct"
-BASICSTUFF="binutils debugedit gzip"
-COMPILERS="base-devel"
+QTVER=$(curl -Ls https://archlinux.org/packages/extra/x86_64/obs-studio/ | tr '"><' '\n' | grep "^qt.*svg$" | head -1)
+[ "$QTVER" = qt5-svg ] && kvantumver="kvantum-qt5 qt5ct" || kvantumver="kvantum qt6ct"
+DEPENDENCES="ca-certificates python libuiohook luajit libfdk-aac xapp $kvantumver"
+#BASICSTUFF="binutils debugedit gzip"
+#COMPILERS="base-devel"
 
 # CREATE AND ENTER THE APPDIR
 if ! test -f ./appimagetool; then
@@ -20,12 +22,6 @@ HOME="$(dirname "$(readlink -f $0)")"
 # DOWNLOAD AND INSTALL JUNEST
 function _enable_multilib() {
 	printf "\n[multilib]\nInclude = /etc/pacman.d/mirrorlist" >> ./.junest/etc/pacman.conf
-}
-
-function _install_libselinux_if_dependence() {
-	if [[ "$DEPENDENCES" = *"libselinux"* ]]; then
-		printf "\n[selinux]\nServer = https://github.com/archlinuxhardened/selinux/releases/download/ArchLinux-SELinux\nSigLevel = Never" >> ./.junest/etc/pacman.conf
-	fi
 }
 
 function _enable_chaoticaur() {
@@ -53,7 +49,6 @@ function _bypass_signature_check_level() {
 
 function _pacman_patches() {
 	_enable_multilib
-	_install_libselinux_if_dependence
 	###_enable_chaoticaur
 	_custom_mirrorlist
 	_bypass_signature_check_level
@@ -104,7 +99,7 @@ fi
 function _backup_junest() {
 	cd ..
 	echo ""
-	echo "n-----------------------------------------------------------"
+	echo "-----------------------------------------------------------"
 	echo " BACKUP OF JUNEST FOR FURTHER APPIMAGE BUILDING ATTEMPTS"
 	echo "-----------------------------------------------------------"
 	mkdir -p ./junest-backups
@@ -132,7 +127,9 @@ if [ ! -z "$DEPENDENCES" ]; then
 	./.local/share/junest/bin/junest -- yay --noconfirm -S "$DEPENDENCES"
 fi
 if [ ! -z "$APP" ]; then
+	./.local/share/junest/bin/junest -- yay --noconfirm -S alsa-lib gtk3
 	./.local/share/junest/bin/junest -- yay --noconfirm -S "$APP"
+	./.local/share/junest/bin/junest -- glib-compile-schemas /usr/share/glib-2.0/schemas/
 else
 	echo "No app found, exiting"; exit 1
 fi
@@ -207,17 +204,26 @@ function _create_AppRun() {
 	export JUNEST_HOME=$HERE/.junest
 	export PATH=$PATH:$HERE/.local/share/junest/bin
 
-	if test -f /etc/resolv.conf; then ETC_RESOLV=' --bind /etc/resolv.conf /etc/resolv.conf '; fi
-	if test -d /media; then MNT_MEDIA_DIR=' --bind /media /media '; fi
-	if test -d /mnt; then MNT_DIR=' --bind /mnt /mnt '; fi
-	if test -d /opt; then OPT_DIR=' --bind /opt /opt '; fi
-	if test -d /run/user; then USR_LIB_LOCALE_DIR=' --bind /usr/lib/locale /usr/lib/locale '; fi
-	if test -d /usr/share/fonts; then USR_SHARE_FONTS_DIR=' --bind /usr/share/fonts /usr/share/fonts '; fi
-	if test -d /usr/share/themes; then USR_SHARE_THEMES_DIR=' --bind /usr/share/themes /usr/share/themes '; fi
-
-	BINDS=" $ETC_RESOLV $MNT_MEDIA_DIR $MNT_DIR $OPT_DIR $USR_LIB_LOCALE_DIR $USR_SHARE_FONTS_DIR $USR_SHARE_THEMES_DIR "
-
-	if test -f $JUNEST_HOME/usr/lib/libselinux.so; then export LD_LIBRARY_PATH=/lib/:/lib64/:/lib/x86_64-linux-gnu/:/usr/lib/:"${LD_LIBRARY_PATH}"; fi
+	BINDS=" --dev-bind /dev /dev \
+		--ro-bind /sys /sys \
+		--bind-try /tmp /tmp \
+		--proc /proc \
+		--ro-bind-try /etc/resolv.conf /etc/resolv.conf \
+		--ro-bind-try /etc/hosts /etc/hosts \
+		--ro-bind-try /etc/nsswitch.conf /etc/nsswitch.conf \
+		--ro-bind-try /etc/passwd /etc/passwd \
+		--ro-bind-try /etc/group /etc/group \
+		--ro-bind-try /etc/machine-id /etc/machine-id \
+		--ro-bind-try /etc/asound.conf /etc/asound.conf \
+		--ro-bind-try /etc/localtime /etc/localtime \
+		--bind-try /media /media \
+		--bind-try /mnt /mnt \
+		--bind-try /opt /opt \
+		--bind-try /usr/lib/locale /usr/lib/locale \
+		--bind-try /usr/share/fonts /usr/share/fonts \
+		--bind-try /usr/share/themes /usr/share/themes \
+		--bind-try /var /var \
+		"
 
 	EXEC=$(grep -e '^Exec=.*' "${HERE}"/*.desktop | head -n 1 | cut -d "=" -f 2- | sed -e 's|%.||g')
 	$HERE/.local/share/junest/bin/junest -n -b "$BINDS" -- $EXEC "$@"
@@ -230,7 +236,7 @@ function _made_JuNest_a_potable_app() {
 	sed -i 's#${JUNEST_HOME}/usr/bin/junest_wrapper#${HOME}/.cache/junest_wrapper.old#g' ./.local/share/junest/lib/core/wrappers.sh
 	sed -i 's/rm -f "${JUNEST_HOME}${bin_path}_wrappers/#rm -f "${JUNEST_HOME}${bin_path}_wrappers/g' ./.local/share/junest/lib/core/wrappers.sh
 	sed -i 's/ln/#ln/g' ./.local/share/junest/lib/core/wrappers.sh
-	sed -i 's#--bind "$HOME" "$HOME"#--bind /home /home --bind-try /run/user /run/user#g' .local/share/junest/lib/core/namespace.sh
+	sed -i 's#--bind "$HOME" "$HOME"#--bind-try /home /home --bind-try /run/user /run/user#g' .local/share/junest/lib/core/namespace.sh
 	sed -i 's/rm -f "$file"/test -f "$file"/g' ./.local/share/junest/lib/core/wrappers.sh
 }
 
@@ -340,7 +346,9 @@ echo ""
 # SAVE FILES USING KEYWORDS
 BINSAVED="certificates SAVEBINSPLEASE" # Enter here keywords to find and save in /usr/bin
 SHARESAVED="certificates glvnd alsa" # Enter here keywords or file/directory names to save in both /usr/share and /usr/lib
-LIBSAVED="pk p11 EGL gl libdrm libedit libLLVM libsensors libva libwayland libxcb libxshmfence loopback pen qt v4l vpl alsa jack pipewire pulse" # Enter here keywords or file/directory names to save in /usr/lib
+lib_browser_launcher="gio-launch-desktop libdl.so libpthread.so librt.so libasound.so libX11-xcb.so libgtk-3" # Libraries and files needed to launche the default browser
+LIBSAVED="pk p11 EGL gl libdrm libedit libLLVM libsensors libva libwayland libxcb libxshmfence loopback pen \
+	qt v4l vpl alsa jack pipewire pulse libluajit libfdk libDeckLinkAPI libxapp-gtk3-module $lib_browser_launcher" # Enter here keywords or file/directory names to save in /usr/lib
 
 # Save files in /usr/bin
 function _savebins() {
@@ -448,7 +456,7 @@ function _mvlibs() {
 function _savelibs() {
 	mkdir save
 	_binlibs 2> /dev/null
-	_include_swrast_dri 2> /dev/null
+	#_include_swrast_dri 2> /dev/null
 	_libkeywords 2> /dev/null
 	_liblibs 2> /dev/null
 	_mvlibs 2> /dev/null
@@ -494,9 +502,12 @@ function _rsync_dependences() {
 }
 
 function _remove_more_bloatwares() {
-	rm -R -f ./"$APP".AppDir/.junest/home # remove the inbuilt home
+	_remove_some_bloatwares
+ 	rm -R -f ./"$APP".AppDir/.junest/home # remove the inbuilt home
 	rm -R -f ./"$APP".AppDir/.junest/usr/lib/python*/__pycache__/* # if python is installed, removing this directory can save several megabytes
-	#rm -R -f ./"$APP".AppDir/.junest/usr/lib/libLLVM-* # included in the compilation phase, can sometimes be excluded for daily use
+	#rm -R -f ./"$APP".AppDir/.junest/usr/lib/libLLVM* # included in the compilation phase, can sometimes be excluded for daily use
+	rm -R -f ./"$APP".AppDir/.junest/usr/share/Kvantum/*
+	rm -R -f ./"$APP".AppDir/.junest/usr/share/man
 }
 
 function _enable_mountpoints_for_the_inbuilt_bubblewrap() {
@@ -504,22 +515,30 @@ function _enable_mountpoints_for_the_inbuilt_bubblewrap() {
 	mkdir -p ./"$APP".AppDir/.junest/media
 	mkdir -p ./"$APP".AppDir/.junest/usr/lib/locale
 	mkdir -p ./"$APP".AppDir/.junest/usr/share/fonts
+	mkdir -p ./"$APP".AppDir/.junest/usr/share/Kvantum
 	mkdir -p ./"$APP".AppDir/.junest/usr/share/themes
 	mkdir -p ./"$APP".AppDir/.junest/run/user
+	rm -f ./"$APP".AppDir/.junest/etc/localtime && touch ./"$APP".AppDir/.junest/etc/localtime
 	[ ! -f ./"$APP".AppDir/.junest/etc/asound.conf ] && touch ./"$APP".AppDir/.junest/etc/asound.conf
 }
 
 _rsync_main_package
 _rsync_dependences
 _remove_more_bloatwares
-strip --strip-debug ./$APP.AppDir/.junest/usr/lib/*
-strip --strip-unneeded ./$APP.AppDir/.junest/usr/bin/*
+find ./"$APP".AppDir/.junest/usr/lib ./"$APP".AppDir/.junest/usr/lib32 -type f -regex '.*\.a' -exec rm -f {} \;
+find ./"$APP".AppDir/.junest/usr -type f -regex '.*\.so.*' -exec strip --strip-debug {} \;
+find ./"$APP".AppDir/.junest/usr/bin -type f ! -regex '.*\.so.*' -exec strip --strip-unneeded {} \;
 _enable_mountpoints_for_the_inbuilt_bubblewrap
-_remove_some_bloatwares
+
+# ADDITIONAL STEPS
+cp ./deps/usr/lib/libfdk-aac* ./"$APP".AppDir/.junest/usr/lib/
+mkdir -p ./"$APP".AppDir/.junest/usr/lib/gtk-3.0/modules
+cp ./deps/usr/lib/gtk-3.0/modules/libxapp-gtk3-module.so ./"$APP".AppDir/.junest/usr/lib/gtk-3.0/modules/
 
 # CREATE THE APPIMAGE
 if test -f ./*.AppImage; then
 	rm -R -f ./*archimage*.AppImage
 fi
-ARCH=x86_64 ./appimagetool --comp zstd --mksquashfs-opt -Xcompression-level --mksquashfs-opt 20 ./"$APP".AppDir
-mv ./*AppImage ./"$(cat ./"$APP".AppDir/*.desktop | grep 'Name=' | head -1 | cut -c 6- | sed 's/ /-/g')"_"$VERSION"-archimage3.4.4-x86_64.AppImage
+ARCH=x86_64 ./appimagetool --comp zstd --mksquashfs-opt -Xcompression-level --mksquashfs-opt 20 \
+	-u "gh-releases-zsync|$GITHUB_REPOSITORY_OWNER|OBS-Studio-appimage|continuous|*x86_64.AppImage.zsync" \
+	./"$(cat ./"$APP".AppDir/*.desktop | grep 'Name=' | head -1 | cut -c 6- | sed 's/ /-/g')"_"$VERSION"-archimage3.4.4-2-x86_64.AppImage
