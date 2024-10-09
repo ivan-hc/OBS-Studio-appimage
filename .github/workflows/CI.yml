@@ -22,7 +22,7 @@ jobs:
         chmod a+x ./obs-junest.sh
         ./obs-junest.sh
         mkdir dist
-        mv *AppImage dist/
+        mv *AppImage* dist/
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4.4.0
@@ -48,5 +48,5 @@ jobs:
             prerelease: false
             draft: false
             files: |
-              *.AppImage
+              *.AppImage*
             repo_token: ${{ secrets.GITHUB_TOKEN }}
