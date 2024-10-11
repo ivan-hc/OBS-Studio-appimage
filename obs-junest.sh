@@ -20,10 +20,6 @@ mkdir -p "$APP".AppDir && cd "$APP".AppDir || exit 1
 HOME="$(dirname "$(readlink -f $0)")"
 
 # DOWNLOAD AND INSTALL JUNEST
-function _enable_multilib() {
-	printf "\n[multilib]\nInclude = /etc/pacman.d/mirrorlist" >> ./.junest/etc/pacman.conf
-}
-
 function _enable_chaoticaur() {
 	# This function is ment to be used during the installation of JuNest, see "_pacman_patches"
 	./.local/share/junest/bin/junest -- sudo pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
@@ -48,7 +44,6 @@ function _bypass_signature_check_level() {
 }
 
 function _pacman_patches() {
-	_enable_multilib
 	###_enable_chaoticaur
 	_custom_mirrorlist
 	_bypass_signature_check_level
@@ -508,6 +503,9 @@ function _remove_more_bloatwares() {
 	#rm -R -f ./"$APP".AppDir/.junest/usr/lib/libLLVM* # included in the compilation phase, can sometimes be excluded for daily use
 	rm -R -f ./"$APP".AppDir/.junest/usr/share/Kvantum/*
 	rm -R -f ./"$APP".AppDir/.junest/usr/share/man
+	find ./"$APP".AppDir/.junest/usr/lib ./"$APP".AppDir/.junest/usr/lib32 -type f -regex '.*\.a' -exec rm -f {} \;
+	find ./"$APP".AppDir/.junest/usr -type f -regex '.*\.so.*' -exec strip --strip-debug {} \;
+	find ./"$APP".AppDir/.junest/usr/bin -type f ! -regex '.*\.so.*' -exec strip --strip-unneeded {} \;
 }
 
 function _enable_mountpoints_for_the_inbuilt_bubblewrap() {
