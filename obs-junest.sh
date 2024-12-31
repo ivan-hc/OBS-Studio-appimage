@@ -5,7 +5,12 @@ APP=obs-studio
 BIN="obs"
 QTVER=$(curl -Ls https://archlinux.org/packages/extra/x86_64/obs-studio/ | tr '"><' '\n' | grep "^qt.*svg$" | head -1)
 [ "$QTVER" = qt5-svg ] && kvantumver="kvantum-qt5 qt5ct" || kvantumver="kvantum qt6ct"
-DEPENDENCES="ca-certificates python libuiohook luajit libfdk-aac xapp $kvantumver"
+DEPENDENCES="ca-certificates dbus \
+alsa-lib alsa-oss alsa-plugins alsa-tools alsa-utils jack2 \
+pulseaudio pulseaudio-alsa libpulse libsndfile libasyncns libogg libvorbis flac opus mpg123 lame \
+libpipewire pipewire pipewire-alsa pipewire-audio pipewire-pulse wireplumber \
+libgnomekbd \
+python libuiohook luajit libfdk-aac xapp $kvantumver"
 #BASICSTUFF="binutils debugedit gzip"
 #COMPILERS="base-devel"
 
@@ -198,6 +203,33 @@ function _create_AppRun() {
 	export UNION_PRELOAD=$HERE
 	export JUNEST_HOME=$HERE/.junest
 	export PATH=$PATH:$HERE/.local/share/junest/bin
+
+	[ -z "$NVIDIA_ON" ] && NVIDIA_ON=1
+	if [ "$NVIDIA_ON" = 1 ]; then
+	  DATADIR="${XDG_DATA_HOME:-$HOME/.local/share}"
+	  CONTY_DIR="${DATADIR}/Conty/overlayfs_shared"
+	  CACHEDIR="${XDG_CACHE_HOME:-$HOME/.cache}"
+	  [ -f /sys/module/nvidia/version ] && nvidia_driver_version="$(cat /sys/module/nvidia/version)"
+	  [ -f "${CONTY_DIR}"/nvidia/current-nvidia-version ] && nvidia_driver_conty="$(cat "${CONTY_DIR}"/nvidia/current-nvidia-version)"
+	  if [ "${nvidia_driver_version}" != "${nvidia_driver_conty}" ]; then
+	     if command -v curl >/dev/null 2>&1; then
+	        if ! curl --output /dev/null --silent --head --fail https://github.com 1>/dev/null; then
+	          notify-send "You are offline, cannot use Nvidia drivers"
+	        else
+	          notify-send "Configuring Nvidia drivers for this AppImage..."
+	          mkdir -p "${CACHEDIR}" && cd "${CACHEDIR}" || exit 1
+	          curl -Ls "https://raw.githubusercontent.com/ivan-hc/ArchImage/main/nvidia-junest.sh" > nvidia-junest.sh
+	          chmod a+x ./nvidia-junest.sh && ./nvidia-junest.sh
+	        fi
+	     else
+	        notify-send "Missing \"curl\" command, cannot use Nvidia drivers"
+	        echo "You need \"curl\" to download this script"
+	     fi
+	  fi
+	  [ -d "${CONTY_DIR}"/up/usr/bin ] && export PATH="${PATH}":"${CONTY_DIR}"/up/usr/bin:"${PATH}"
+	  [ -d "${CONTY_DIR}"/up/usr/lib ] && export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}":"${CONTY_DIR}"/up/usr/lib:"${LD_LIBRARY_PATH}"
+	  [ -d "${CONTY_DIR}"/up/usr/share ] && export XDG_DATA_DIRS="${XDG_DATA_DIRS}":"${CONTY_DIR}"/up/usr/share:"${XDG_DATA_DIRS}"
+	fi
 
 	BINDS=" --dev-bind /dev /dev \
 		--ro-bind /sys /sys \
@@ -542,4 +574,4 @@ fi
 export ARCH=x86_64
 ./appimagetool -n --comp zstd --mksquashfs-opt -Xcompression-level --mksquashfs-opt 20 \
 	-u "gh-releases-zsync|$GITHUB_REPOSITORY_OWNER|OBS-Studio-appimage|latest|*-$ARCH.AppImage.zsync" \
-	./"$APP".AppDir ./"$(awk -F"=" '/Name=/ {print $2; exit}' ./"$APP".AppDir/*.desktop | sed 's/ /-/g')"_"$VERSION"-archimage3.4.4-2-"$ARCH".AppImage
+	./"$APP".AppDir ./"$(awk -F"=" '/Name=/ {print $2; exit}' ./"$APP".AppDir/*.desktop | sed 's/ /-/g')"_"$VERSION"-archimage4-"$ARCH".AppImage
