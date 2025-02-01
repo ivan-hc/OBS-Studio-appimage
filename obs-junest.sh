@@ -10,12 +10,12 @@ DEPENDENCES="" #SYNTAX: "APP1 APP2 APP3 APP4...", LEAVE BLANK IF NO OTHER DEPEND
 #	KEYWORDS TO FIND AND SAVE WHEN COMPILING THE APPIMAGE
 #############################################################################
 
-BINSAVED="SAVEBINSPLEASE"
+BINSAVED="v4l"
 SHARESAVED="glvnd"
 lib_audio_keywords="alsa jack pipewire pulse"
 lib_browser_launcher="gio-launch-desktop libasound.so libatk-bridge libatspi libcloudproviders libdb- libdl.so libedit libepoxy libgtk-3.so.0 libjson-glib libnssutil libpthread.so librt.so libtinysparql libwayland-cursor libX11-xcb.so libxapp-gtk3-module.so libXcursor libXdamage libXi.so libxkbfile.so libXrandr p11 pk"
 LIBSAVED="EGL libDeckLinkAPI libdrm libedit libfdk libFLAC.so libglslang-default-resource-limits.so libLLVM libluajit libpxbackend libsensors \
-libSM.so libsodium.so libsoxr.so libva libwayland libxcb libxshmfence qt v4l $lib_audio_keywords $lib_browser_launcher"
+libSM.so libsodium.so libsoxr.so libva libwayland libxcb libxshmfence qt v4l libSDL $lib_audio_keywords $lib_browser_launcher"
 
 [ -n "$lib_browser_launcher" ] && DEPENDENCES="$DEPENDENCES xapp hicolor-icon-theme"
 
