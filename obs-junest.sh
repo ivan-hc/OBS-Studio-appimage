@@ -280,7 +280,7 @@ chmod a+x "$APP".AppDir/AppRun
 #	EXTRACT PACKAGES
 #############################################################################
 
-[ -z "$extraction_count" ] && extraction_count=0
+[ -z "$extraction_count" ] && extraction_count=1
 [ ! -f ./autodeps ] && echo "$extraction_count" > ./autodeps
 [ -f ./autodeps ] && autodeps=$(cat ./autodeps)
 [ "$autodeps" != "$extraction_count" ] && rm -Rf ./deps ./packages && echo "$extraction_count" > ./autodeps
