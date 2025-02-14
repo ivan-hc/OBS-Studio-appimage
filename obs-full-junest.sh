@@ -16,7 +16,7 @@ lib_audio_keywords="alsa jack pipewire pulse"
 lib_browser_launcher="gio-launch-desktop libasound.so libatk-bridge libatspi libcloudproviders libdb- libdl.so libedit libepoxy libgtk-3.so.0 libjson-glib libnssutil libpthread.so librt.so libtinysparql libwayland-cursor libX11-xcb.so libxapp-gtk3-module.so libXcursor libXdamage libXi.so libxkbfile.so libXrandr p11 pk"
 LIBSAVED="EGL libDeckLinkAPI libdrm libedit libfdk libFLAC.so libglslang-default-resource-limits.so libLLVM libluajit libpxbackend libsensors \
 libSM.so libsodium.so libsoxr.so libva libwayland libxcb libuuid libxshmfence qt v4l libSDL \
-libleancrypto libcjson  $lib_audio_keywords $lib_browser_launcher"
+libleancrypto libcjson libxkbcommon $lib_audio_keywords $lib_browser_launcher"
 
 [ -n "$lib_browser_launcher" ] && DEPENDENCES="$DEPENDENCES xapp hicolor-icon-theme"
 
@@ -282,7 +282,7 @@ chmod a+x "$APP".AppDir/AppRun
 #	EXTRACT PACKAGES
 #############################################################################
 
-[ -z "$extraction_count" ] && extraction_count=1
+[ -z "$extraction_count" ] && extraction_count=0
 [ ! -f ./autodeps ] && echo "$extraction_count" > ./autodeps
 [ -f ./autodeps ] && autodeps=$(cat ./autodeps)
 [ "$autodeps" != "$extraction_count" ] && rm -Rf ./deps ./packages && echo "$extraction_count" > ./autodeps
