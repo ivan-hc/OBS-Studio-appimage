@@ -2,7 +2,7 @@
 
 APP=obs-studio-browser
 BIN="obs" #CHANGE THIS IF THE NAME OF THE BINARY IS DIFFERENT FROM "$APP" (for example, the binary of "obs-studio" is "obs")
-DEPENDENCES="python leancrypto icu" #SYNTAX: "APP1 APP2 APP3 APP4...", LEAVE BLANK IF NO OTHER DEPENDENCIES ARE NEEDED
+DEPENDENCES="python leancrypto" #SYNTAX: "APP1 APP2 APP3 APP4...", LEAVE BLANK IF NO OTHER DEPENDENCIES ARE NEEDED
 BASICSTUFF="binutils debugedit gzip"
 COMPILERS="base-devel"
 
@@ -114,7 +114,6 @@ if [ -n "$COMPILERS" ]; then
 	./.local/share/junest/bin/junest -- yay --noconfirm -S $COMPILERS
 fi
 if [ -n "$DEPENDENCES" ]; then
-	./.local/share/junest/bin/junest -- yay --noconfirm -R icu
  	./.local/share/junest/bin/junest -- yay --noconfirm -S $DEPENDENCES
 fi
 if [ -n "$APP" ]; then
