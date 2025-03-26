@@ -20,7 +20,6 @@ jobs:
         sudo apt update && sudo apt install desktop-file-utils
         sudo sysctl -w kernel.apparmor_restrict_unprivileged_unconfined=0
         sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
-        wget https://raw.githubusercontent.com/ivan-hc/OBS-Studio-appimage/main/obs-junest.sh
         chmod a+x ./obs-junest.sh
         ./obs-junest.sh
         mkdir dist
