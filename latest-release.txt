@@ -1,3 +1,1 @@
-https://github.com/ivan-hc/OBS-Studio-appimage/releases/download/continuous/OBS-Studio_31.0.4-1-archimage4.3-x86_64.AppImage
-https://github.com/ivan-hc/OBS-Studio-appimage/releases/download/continuous-full/OBS-Studio-FULL_31.1.1-1-archimage4.3-x86_64.AppImage
-Tue Jul 15 00:55:35 UTC 2025
+Wed Jul 16 00:54:51 UTC 2025
