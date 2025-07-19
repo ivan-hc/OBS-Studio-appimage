@@ -2,7 +2,7 @@
 
 APP=obs-studio-browser
 BIN="obs" #CHANGE THIS IF THE NAME OF THE BINARY IS DIFFERENT FROM "$APP" (for example, the binary of "obs-studio" is "obs")
-DEPENDENCES="python leancrypto libpipewire obs-pipewire-audio-capture pipewire pipewire-alsa pipewire-audio pipewire-jack pipewire-pulse" #SYNTAX: "APP1 APP2 APP3 APP4...", LEAVE BLANK IF NO OTHER DEPENDENCIES ARE NEEDED
+DEPENDENCES="python leancrypto libpipewire pipewire pipewire-alsa pipewire-audio pipewire-jack pipewire-pulse" #SYNTAX: "APP1 APP2 APP3 APP4...", LEAVE BLANK IF NO OTHER DEPENDENCIES ARE NEEDED
 BASICSTUFF="binutils debugedit gzip"
 COMPILERS="base-devel asio-git"
 
