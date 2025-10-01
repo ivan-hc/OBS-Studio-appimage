@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-APP=obs-studio-browser
+APP=obs-studio-stable
 BIN="obs" #CHANGE THIS IF THE NAME OF THE BINARY IS DIFFERENT FROM "$APP" (for example, the binary of "obs-studio" is "obs")
-DEPENDENCES="python leancrypto libpipewire pipewire pipewire-alsa pipewire-audio pipewire-jack pipewire-pulse" #SYNTAX: "APP1 APP2 APP3 APP4...", LEAVE BLANK IF NO OTHER DEPENDENCIES ARE NEEDED
-BASICSTUFF="binutils debugedit gzip"
-COMPILERS="base-devel asio-git"
+DEPENDENCES="" #SYNTAX: "APP1 APP2 APP3 APP4...", LEAVE BLANK IF NO OTHER DEPENDENCIES ARE NEEDED
+#BASICSTUFF="binutils debugedit gzip"
+#COMPILERS="base-devel"
 
 #############################################################################
 #	KEYWORDS TO FIND AND SAVE WHEN COMPILING THE APPIMAGE
@@ -15,8 +15,7 @@ SHARESAVED="glvnd"
 lib_audio_keywords="alsa jack pipewire pulse"
 lib_browser_launcher="gio-launch-desktop libasound.so libatk-bridge libatspi libcloudproviders libdb- libdl.so libedit libepoxy libgtk-3.so.0 libjson-glib libnssutil libpthread.so librt.so libtinysparql libwayland-cursor libX11-xcb.so libxapp-gtk3-module.so libXcursor libXdamage libXi.so libxkbfile.so libXrandr p11 pk"
 LIBSAVED="EGL libDeckLinkAPI libdrm libedit libfdk libFLAC.so libglslang-default-resource-limits.so libLLVM libluajit libpxbackend libsensors \
-libSM.so libsodium.so libsoxr.so libva libwayland libxcb libuuid libxshmfence qt v4l libSDL \
-libleancrypto libcjson libxkbcommon $lib_audio_keywords $lib_browser_launcher"
+libSM.so libsodium.so libsoxr.so libva libwayland xcb libxshmfence qt v4l libSDL libuuid libxkb libcjson libavahi $lib_audio_keywords $lib_browser_launcher"
 
 [ -n "$lib_browser_launcher" ] && DEPENDENCES="$DEPENDENCES xapp hicolor-icon-theme"
 
@@ -55,6 +54,11 @@ _enable_chaoticaur() {
 	printf "\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist" >> ./.junest/etc/pacman.conf
 }
 
+_enable_archlinuxcn() {
+	./.local/share/junest/bin/junest -- sudo pacman --noconfirm -U "https://repo.archlinuxcn.org/x86_64/$(curl -Ls https://repo.archlinuxcn.org/x86_64/ | tr '"' '\n' | grep "^archlinuxcn-keyring.*zst$" | tail -1)"
+	printf "\n[archlinuxcn]\n#SigLevel = Never\nServer = http://repo.archlinuxcn.org/\$arch" >> ./.junest/etc/pacman.conf
+}
+
 _custom_mirrorlist() {
 	COUNTRY=$(curl -i ipinfo.io 2>/dev/null | grep country | cut -c 15- | cut -c -2)
 	if [ -n "$GITHUB_REPOSITORY_OWNER" ] || ! curl --output /dev/null --silent --head --fail "https://archlinux.org/mirrorlist/?country=$COUNTRY" 1>/dev/null; then
@@ -82,6 +86,7 @@ _install_junest() {
 	echo " Apply patches to PacMan..."
 	#_enable_multilib
 	_enable_chaoticaur
+	#_enable_archlinuxcn
 	_custom_mirrorlist
 	_bypass_signature_check_level
 
@@ -112,16 +117,20 @@ if [ -n "$BASICSTUFF" ]; then
 fi
 if [ -n "$COMPILERS" ]; then
 	./.local/share/junest/bin/junest -- yay --noconfirm -S $COMPILERS
+	./.local/share/junest/bin/junest -- yay --noconfirm -S python # to force one Python version and prevent modules from being installed in different directories (e.g. "mesonbuild")
 fi
 if [ -n "$DEPENDENCES" ]; then
 	./.local/share/junest/bin/junest -- yay --noconfirm -S $DEPENDENCES
 fi
 if [ -n "$APP" ]; then
 	./.local/share/junest/bin/junest -- yay --noconfirm -S alsa-lib gtk3 xapp
-	./.local/share/junest/bin/junest -- yay --noconfirm -S "$(./.local/share/junest/bin/junest -- yay -Si "$APP" | grep -i 'depends on' | cut -d ':' -f 2)"
-	./.local/share/junest/bin/junest -- yay --noconfirm -Sa "$APP"
+	./.local/share/junest/bin/junest -- yay --noconfirm -S "$APP"
 	curl -#Lo gdk-pixbuf2-2.x-x86_64.pkg.tar.zst https://github.com/pkgforge-dev/archlinux-pkgs-debloated/releases/download/continuous/gdk-pixbuf2-mini-x86_64.pkg.tar.zst || exit 1
 	./.local/share/junest/bin/junest -- yay --noconfirm -U "$HOME"/gdk-pixbuf2-2.x-x86_64.pkg.tar.zst
+	curl -#Lo llvm-libs-2.x-x86_64.pkg.tar.zst https://github.com/pkgforge-dev/archlinux-pkgs-debloated/releases/download/continuous/llvm-libs-nano-x86_64.pkg.tar.zst || exit 1
+	./.local/share/junest/bin/junest -- yay --noconfirm -U "$HOME"/llvm-libs-2.x-x86_64.pkg.tar.zst
+	curl -#Lo mesa-2.x-x86_64.pkg.tar.zst https://github.com/pkgforge-dev/archlinux-pkgs-debloated/releases/download/continuous/mesa-nano-x86_64.pkg.tar.zst || exit 1
+	./.local/share/junest/bin/junest -- yay --noconfirm -U "$HOME"/mesa-2.x-x86_64.pkg.tar.zst
 	./.local/share/junest/bin/junest -- glib-compile-schemas /usr/share/glib-2.0/schemas/
 else
 	echo "No app found, exiting"; exit 1
@@ -274,8 +283,9 @@ _JUNEST_CMD() {
 }
 
 EXEC=$(grep -e '^Exec=.*' "${HERE}"/*.desktop | head -n 1 | cut -d "=" -f 2- | sed -e 's|%.||g')
+if ! echo "$EXEC" | grep -q "/usr/bin"; then EXEC="/usr/bin/$EXEC"; fi
 
-_JUNEST_CMD -- /usr/bin/obs "$@"
+_JUNEST_CMD -- $EXEC "$@"
 
 HEREDOC
 chmod a+x "$APP".AppDir/AppRun
@@ -550,7 +560,9 @@ _enable_mountpoints_for_the_inbuilt_bubblewrap() {
 }
 
 # Fix libcurl
-rm -f ./"$APP".AppDir/.junest/usr/lib/libcurl* && cp -r ./archlinux/.junest/usr/lib/libcurl* ./"$APP".AppDir/.junest/usr/lib/
+if test -f ./"$APP".AppDir/.junest/usr/lib/libcurl*; then
+	rm -f ./"$APP".AppDir/.junest/usr/lib/libcurl* && cp -r ./archlinux/.junest/usr/lib/libcurl* ./"$APP".AppDir/.junest/usr/lib/
+fi
 
 _remove_more_bloatwares
 find ./"$APP".AppDir/.junest/usr/lib ./"$APP".AppDir/.junest/usr/lib32 -type f -regex '.*\.a' -exec rm -f {} \; 2>/dev/null
