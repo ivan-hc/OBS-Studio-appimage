@@ -6,7 +6,7 @@ Sinc of October 2, 2025, the two builds are based on the "obs-studio-stable" pac
 
 Choose which one is right for you.
 
-Weekly snapshots are also available in among the other [releases](https://github.com/ivan-hc/OBS-Studio-appimage/releases)
+Weekly snapshots are also available among the other [releases](https://github.com/ivan-hc/OBS-Studio-appimage/releases).
 
 ## Credits
 - JuNest https://github.com/fsquillace/junest
