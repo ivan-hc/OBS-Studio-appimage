@@ -1,8 +1,12 @@
 This repository creates and distributes the unofficial Appimage of OBS Studio built on top of JuNest, the lightweight Arch Linux based distro that runs, without root privileges, on top of any other Linux distro.
 
-Versions available are:
-- `obs-studio`, the regular/lightweight version https://github.com/ivan-hc/OBS-Studio-appimage/releases/tag/continuous
-- `obs-studio-full`, with web browser support https://github.com/ivan-hc/OBS-Studio-appimage/releases/tag/continuous-full
+Sinc of October 2, 2025, the two builds are based on the "obs-studio-stable" package in ChaoticAUR and are both available at "[continuous](https://github.com/ivan-hc/OBS-Studio-appimage/releases/tag/continuous)" or "[latest](https://github.com/ivan-hc/OBS-Studio-appimage/releases/latest)" tag:
+- **Full** (`full`) build includes libcef and then browser support
+- **Lite** (`lite`) build instead has not such library and is about 100 MB smaller (compressed, while extracted is more than 300 MB smaller).
+
+Choose which one is right for you.
+
+Weekly snapshots are also available among the other [releases](https://github.com/ivan-hc/OBS-Studio-appimage/releases).
 
 ## Credits
 - JuNest https://github.com/fsquillace/junest
