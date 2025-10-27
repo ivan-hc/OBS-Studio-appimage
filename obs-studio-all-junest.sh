@@ -168,7 +168,7 @@ chmod a+x AppDir/AppRun
 if test -f ./*.AppImage; then rm -Rf ./*archimage*.AppImage; fi
 
 APPNAME=$(cat AppDir/*.desktop | grep '^Name=' | head -1 | cut -c 6- | sed 's/ /-/g')
-REPO="$APPNAME-appimage"
+REPO="OBS-Studio-appimage"
 TAG="latest"
 UPINFO="gh-releases-zsync|$GITHUB_REPOSITORY_OWNER|$REPO|$TAG|*full-x86_64.AppImage.zsync"
 
