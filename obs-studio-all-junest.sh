@@ -137,8 +137,7 @@ _appimagetool() {
 	fi
 }
 
-ARCH=x86_64 _appimagetool -u "$UPINFO" \
-	AppDir "$APPNAME"_"$VERSION"-archimage5.0-full-x86_64.AppImage
+ARCH=x86_64 _appimagetool -u "$UPINFO" AppDir "$APPNAME"_"$VERSION"-"$ARCHIMAGE_VERSION"-full-x86_64.AppImage
 
 if ! test -f ./*full*.AppImage; then exit 1; fi
 
@@ -153,7 +152,6 @@ if test -f ./*lite*.AppImage; then rm -Rf ./*archimage*lite*.AppImage; fi
 
 UPINFO="gh-releases-zsync|$GITHUB_REPOSITORY_OWNER|$REPO|$TAG|*lite-x86_64.AppImage.zsync"
 
-ARCH=x86_64 _appimagetool -u "$UPINFO" \
-	AppDir "$APPNAME"_"$VERSION"-archimage5.0-lite-x86_64.AppImage
+ARCH=x86_64 _appimagetool -u "$UPINFO" AppDir "$APPNAME"_"$VERSION"-"$ARCHIMAGE_VERSION"-lite-x86_64.AppImage
 
 if ! test -f ./*lite*.AppImage; then exit 1; fi
