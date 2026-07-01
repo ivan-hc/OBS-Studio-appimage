@@ -9,7 +9,7 @@ COMPILERS="base-devel"
 # Set keywords to searchan include in names of directories and files in /usr/bin (BINSAVED), /usr/share (SHARESAVED) and /usr/lib (LIBSAVED)
 BINSAVED="python v4l"
 SHARESAVED="glvnd"
-LIBSAVED="python"
+LIBSAVED="python wayland"
 
 # Set the items you want to manually REMOVE. Complete the path in /etc/, /usr/bin/, /usr/lib/, /usr/lib/python*/ and /usr/share/ respectively.
 # The "rm" command will take into account the listed object/path and add an asterisk at the end, completing the path to be removed.
@@ -30,8 +30,9 @@ mountpoint_dirs="/usr/share/fontconfig/conf.avail /etc/fonts/conf.d"
 # Post-installation processes (add whatever you want)
 _post_installation_processes() {
 	printf "\n◆ User's processes: \n\n"
-	echo " - None"
-	# Add here your code
+	echo " - copy the whole content of /usr/lib/cef"
+	mkdir -p AppDir/.junest/usr/lib/cef/
+	rsync -av --inplace --no-whole-file --size-only ./archlinux/.junest/usr/lib/cef/* AppDir/.junest/usr/lib/cef/ 1>/dev/null
 }
 
 ##########################################################################################################################################################
