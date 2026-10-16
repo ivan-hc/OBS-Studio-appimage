@@ -2,7 +2,7 @@
 
 APP=obs-studio
 BIN="obs" #CHANGE THIS IF THE NAME OF THE BINARY IS DIFFERENT FROM "$APP" (for example, the binary of "obs-studio" is "obs")
-DEPENDENCES="cef libfdk-aac luajit obs-studio-plugin-browser pipiwire python wayland" #SYNTAX: "APP1 APP2 APP3 APP4...", LEAVE BLANK IF NO OTHER DEPENDENCIES ARE NEEDED
+DEPENDENCES="cef libfdk-aac luajit nss obs-studio-plugin-browser pipiwire python wayland" #SYNTAX: "APP1 APP2 APP3 APP4...", LEAVE BLANK IF NO OTHER DEPENDENCIES ARE NEEDED
 BASICSTUFF="binutils debugedit gzip"
 COMPILERS="base-devel"
 
@@ -24,7 +24,7 @@ SHARE_REMOVED="gcc icons/AdwaitaLegacy icons/Adwaita/cursors/ terminfo"
 # Default mounted files are /etc/resolv.conf, /etc/hosts, /etc/nsswitch.conf, /etc/passwd, /etc/group, /etc/machine-id, /etc/asound.conf and /etc/localtime
 # Default mounted directories are /media, /mnt, /opt, /run/media, /usr/lib/locale, /usr/share/fonts, /usr/share/themes, /var, and Nvidia-related directories
 # Do not touch this if you are not sure.
-mountpoint_files=""
+mountpoint_files="/etc/os-release"
 mountpoint_dirs="/usr/share/fontconfig/conf.avail /etc/fonts/conf.d"
 
 # Post-installation processes (add whatever you want)
